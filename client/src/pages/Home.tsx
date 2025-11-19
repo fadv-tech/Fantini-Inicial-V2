@@ -1,32 +1,42 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
-import { Streamdown } from 'streamdown';
+import { Send, Settings, FileText } from "lucide-react";
+import { APP_TITLE } from "@/const";
+import { Link } from "wouter";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
-
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
-
-  // Use APP_LOGO (as image src) and APP_TITLE if needed
+  const { user, loading, error, isAuthenticated, logout } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
+      <main className="container mx-auto py-12">
+        <div className="text-center space-y-6">
+          <h1 className="text-4xl font-bold">{APP_TITLE}</h1>
+          <p className="text-xl text-muted-foreground">
+            Sistema de Peticionamento Eletrônico via LegalMail
+          </p>
+
+          <div className="flex gap-4 justify-center mt-12">
+            <Link href="/enviar">
+              <Button size="lg" className="gap-2">
+                <Send className="h-5 w-5" />
+                Enviar Petições
+              </Button>
+            </Link>
+            <Link href="/configuracoes">
+              <Button size="lg" variant="outline" className="gap-2">
+                <Settings className="h-5 w-5" />
+                Configurações
+              </Button>
+            </Link>
+            <Link href="/auditoria">
+              <Button size="lg" variant="outline" className="gap-2">
+                <FileText className="h-5 w-5" />
+                Auditoria/LOG
+              </Button>
+            </Link>
+          </div>
+        </div>
       </main>
     </div>
   );

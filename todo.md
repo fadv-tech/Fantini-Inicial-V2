@@ -179,3 +179,49 @@
 - [x] Criar procedures de batelada (listBatches, getBatchDetails)
 - [ ] Implementar SSE para progresso em tempo real
 - [ ] Implementar sendBatch (protocolização em background)
+
+
+## 🎨 Fase 12: Interface SendPetition
+
+- [x] Criar página SendPetition.tsx baseada no modelo fornecido
+- [x] Implementar drag-and-drop de arquivos PDF
+- [x] Integrar com trpc.petition.parseFiles para preview
+- [x] Mostrar arquivos agrupados por processo (CNJ)
+- [x] Identificar visualmente principal vs anexos
+- [x] Dropdown de seleção de certificado
+- [x] Box de LOG em tempo real (abaixo da lista)
+- [x] Barra de progresso com processo atual
+- [x] Botão "Protocolizar" + "Parar" lado a lado
+- [x] Tratamento de duplicatas (warning mas permite)
+- [x] Ícone vermelho para erros com tooltip
+- [x] Modal de resumo ao concluir
+
+## 🔄 Fase 13: SSE e Protocolização em Background
+
+- [ ] Implementar endpoint SSE em server/
+- [ ] Criar sendBatch procedure com background processing
+- [ ] Emitir eventos SSE de progresso
+- [ ] Implementar botão "Parar" via SSE
+- [ ] LOG detalhado de cada etapa (buscar processo, criar petição, upload, protocolar)
+- [ ] Tratamento de erros (processo não encontrado, etc.)
+- [ ] Atualizar status da batelada no banco
+
+## ⚙️ Fase 14: Página de Configurações
+
+- [ ] Criar página Configuracoes.tsx
+- [ ] Tabela com todos os 27 tribunais
+- [ ] Células editáveis inline (dropdowns)
+- [ ] Botão "Sincronizar com LegalMail"
+- [ ] Botão "Aplicar para Todos"
+- [ ] Salvar alterações via trpc.config.updateTribunal
+
+## 📊 Fase 15: Página de Auditoria/LOG
+
+- [ ] Criar página Auditoria.tsx
+- [ ] Listar todas as bateladas
+- [ ] Filtros (data, tribunal, status)
+- [ ] Card expandível para cada batelada
+- [ ] Resumo (sucessos, erros, avisos)
+- [ ] LOG completo colapsável
+- [ ] JSONs de request/response expandíveis
+- [ ] Busca por CNJ
