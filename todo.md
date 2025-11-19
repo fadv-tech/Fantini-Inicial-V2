@@ -163,3 +163,9 @@
 - [ ] SendPetition.tsx - Upload em lote com preview
 - [ ] Configuracoes.tsx - Tabela de tribunais
 - [ ] Auditoria.tsx - LOG completo com filtros
+
+
+## 🔧 Fase 10: Parser e Seed de Tribunais
+
+- [x] Implementar parser completo em shared/
+- [x] Criar seed de 27 tribunais

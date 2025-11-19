@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `tribunal_configs` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `codigoTribunal` varchar(10) NOT NULL UNIQUE,\n  `nomeTribunal` varchar(100) NOT NULL,\n  `nomeCompleto` text,\n  `sistema` varchar(50),\n  `tipoPeticaoPadrao` int,\n  `tipoPeticaoPadraoNome` varchar(255),\n  `tipoAnexoPadrao` int,\n  `tipoAnexoPadraoNome` varchar(255),\n  `certificadoPadrao` int DEFAULT 2562,\n  `certificadoPadraoNome` varchar(255) DEFAULT 'WESLEY FANTINI DE ABREU',\n  `tiposPeticaoDisponiveis` json,\n  `tiposAnexoDisponiveis` json,\n  `ultimaSincronizacao` timestamp NULL,\n  `ativo` boolean DEFAULT true NOT NULL,\n  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39QSeYhbNv3L4jg.846f4ba715a4 --database 2HAR2cejBwEBj6M7XczVcW --execute CREATE TABLE IF NOT EXISTS `tribunal_configs` (\n  `id` int AUTO_INCREMENT PRIMARY KEY,\n  `codigoTribunal` varchar(10) NOT NULL UNIQUE,\n  `nomeTribunal` varchar(100) NOT NULL,\n  `nomeCompleto` text,\n  `sistema` varchar(50),\n  `tipoPeticaoPadrao` int,\n  `tipoPeticaoPadraoNome` varchar(255),\n  `tipoAnexoPadrao` int,\n  `tipoAnexoPadraoNome` varchar(255),\n  `certificadoPadrao` int DEFAULT 2562,\n  `certificadoPadraoNome` varchar(255) DEFAULT 'WESLEY FANTINI DE ABREU',\n  `tiposPeticaoDisponiveis` json,\n  `tiposAnexoDisponiveis` json,\n  `ultimaSincronizacao` timestamp NULL,\n  `ativo` boolean DEFAULT true NOT NULL,\n  `createdAt` timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,\n  `updatedAt` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 223
+}
