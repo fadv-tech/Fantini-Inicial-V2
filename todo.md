@@ -169,3 +169,13 @@
 
 - [x] Implementar parser completo em shared/
 - [x] Criar seed de 27 tribunais
+
+
+## 🔧 Fase 11: Procedures tRPC e Backend
+
+- [x] Criar procedures de certificados (listCertificates)
+- [x] Criar procedures de configuração (syncTribunalWithLegalMail, updateTribunalConfig, applyToAllTribunals)
+- [x] Criar procedures de upload (uploadFiles com Base64)
+- [x] Criar procedures de batelada (listBatches, getBatchDetails)
+- [ ] Implementar SSE para progresso em tempo real
+- [ ] Implementar sendBatch (protocolização em background)

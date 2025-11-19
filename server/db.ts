@@ -141,6 +141,19 @@ export async function upsertTribunalConfig(config: InsertTribunalConfig): Promis
     .onDuplicateKeyUpdate({ set: config });
 }
 
+export async function updateTribunalConfigFields(
+  codigoTribunal: string,
+  fields: Partial<Omit<InsertTribunalConfig, 'codigoTribunal' | 'nomeTribunal'>>
+): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db
+    .update(tribunalConfigs)
+    .set(fields)
+    .where(eq(tribunalConfigs.codigoTribunal, codigoTribunal));
+}
+
 // ==========================================
 // Bateladas
 // ==========================================
