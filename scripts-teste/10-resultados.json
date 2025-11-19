@@ -1,0 +1,32 @@
+[
+  {
+    "tipo": 0,
+    "sucesso": false,
+    "erro": "{\"error\":\"Missing fields: fk_documentos_tipos are required\"}"
+  },
+  {
+    "tipo": 1,
+    "sucesso": false,
+    "erro": "{\"status\":\"error\",\"message\":\"Tipo de documento informado n\\u00e3o \\u00e9 v\\u00e1lido para a peti\\u00e7\\u00e3o. Consulte os tipos dispon\\u00edveis para a peti\\u00e7\\u00e3o em \\/api\\/v1\\/petition\\/attachment\\/types.\"}"
+  },
+  {
+    "tipo": 2,
+    "sucesso": false,
+    "erro": "{\"status\":\"error\",\"message\":\"Tipo de documento informado n\\u00e3o \\u00e9 v\\u00e1lido para a peti\\u00e7\\u00e3o. Consulte os tipos dispon\\u00edveis para a peti\\u00e7\\u00e3o em \\/api\\/v1\\/petition\\/attachment\\/types.\"}"
+  },
+  {
+    "tipo": 3,
+    "sucesso": false,
+    "erro": "{\"status\":\"error\",\"message\":\"Tipo de documento informado n\\u00e3o \\u00e9 v\\u00e1lido para a peti\\u00e7\\u00e3o. Consulte os tipos dispon\\u00edveis para a peti\\u00e7\\u00e3o em \\/api\\/v1\\/petition\\/attachment\\/types.\"}"
+  },
+  {
+    "tipo": null,
+    "sucesso": false,
+    "erro": "{\"error\":\"Missing fields: fk_documentos_tipos are required\"}"
+  },
+  {
+    "tipo": "",
+    "sucesso": false,
+    "erro": "{\"error\":\"Missing fields: fk_documentos_tipos are required\"}"
+  }
+]

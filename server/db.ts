@@ -1,26 +1,23 @@
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
-  users, 
-  processos, 
-  peticoes, 
-  partes, 
-  anexos, 
-  movimentacoes, 
-  certificados, 
-  notificacoes, 
-  webhookConfig,
-  peticoesPartes,
-  type InsertProcesso,
-  type InsertPeticao,
-  type InsertParte,
-  type InsertAnexo,
-  type InsertMovimentacao,
-  type InsertCertificado,
-  type InsertNotificacao,
-  type InsertWebhookConfig,
-  type InsertPeticaoParte
+  users,
+  tribunalConfigs,
+  bateladas,
+  bateladaProcessos,
+  logsAuditoria,
+  arquivosEnviados,
+  type TribunalConfig,
+  type InsertTribunalConfig,
+  type Batelada,
+  type InsertBatelada,
+  type BateladaProcesso,
+  type InsertBateladaProcesso,
+  type LogAuditoria,
+  type InsertLogAuditoria,
+  type ArquivoEnviado,
+  type InsertArquivoEnviado
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -110,260 +107,160 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// ==================== PROCESSOS ====================
+// ==========================================
+// Tribunal Configs
+// ==========================================
 
-export async function listarProcessosDb(params?: { limit?: number; offset?: number }) {
+export async function getTribunalConfig(codigoTribunal: string): Promise<TribunalConfig | undefined> {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) return undefined;
 
-  const query = db
+  const result = await db
     .select()
-    .from(processos)
-    .orderBy(desc(processos.createdAt))
-    .limit(params?.limit || 50)
-    .offset(params?.offset || 0);
+    .from(tribunalConfigs)
+    .where(eq(tribunalConfigs.codigoTribunal, codigoTribunal))
+    .limit(1);
 
-  return await query;
+  return result[0];
 }
 
-export async function obterProcessoDb(id: number) {
-  const db = await getDb();
-  if (!db) return undefined;
-
-  const result = await db.select().from(processos).where(eq(processos.id, id)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
-export async function obterProcessoPorIdLegalMail(idprocessos: number) {
-  const db = await getDb();
-  if (!db) return undefined;
-
-  const result = await db.select().from(processos).where(eq(processos.idprocessos, idprocessos)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
-export async function salvarProcesso(processo: InsertProcesso) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(processos).values(processo);
-  return result;
-}
-
-export async function atualizarProcesso(id: number, dados: Partial<InsertProcesso>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.update(processos).set(dados).where(eq(processos.id, id));
-}
-
-// ==================== PETIÇÕES ====================
-
-export async function listarPeticoesDb(userId: number, params?: { limit?: number; offset?: number }) {
+export async function getAllTribunalConfigs(): Promise<TribunalConfig[]> {
   const db = await getDb();
   if (!db) return [];
 
-  const query = db
+  return await db.select().from(tribunalConfigs);
+}
+
+export async function upsertTribunalConfig(config: InsertTribunalConfig): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db
+    .insert(tribunalConfigs)
+    .values(config)
+    .onDuplicateKeyUpdate({ set: config });
+}
+
+// ==========================================
+// Bateladas
+// ==========================================
+
+export async function createBatelada(data: InsertBatelada): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(bateladas).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function getBatelada(id: number): Promise<Batelada | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
     .select()
-    .from(peticoes)
-    .where(eq(peticoes.userId, userId))
-    .orderBy(desc(peticoes.createdAt))
-    .limit(params?.limit || 50)
-    .offset(params?.offset || 0);
+    .from(bateladas)
+    .where(eq(bateladas.id, id))
+    .limit(1);
 
-  return await query;
+  return result[0];
 }
 
-export async function obterPeticaoDb(id: number) {
+export async function updateBatelada(id: number, data: Partial<Batelada>): Promise<void> {
   const db = await getDb();
-  if (!db) return undefined;
+  if (!db) return;
 
-  const result = await db.select().from(peticoes).where(eq(peticoes.id, id)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  await db.update(bateladas).set(data).where(eq(bateladas.id, id));
 }
 
-export async function salvarPeticao(peticao: InsertPeticao) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(peticoes).values(peticao);
-  return result;
-}
-
-export async function atualizarPeticao(id: number, dados: Partial<InsertPeticao>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.update(peticoes).set(dados).where(eq(peticoes.id, id));
-}
-
-export async function deletarPeticao(id: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.delete(peticoes).where(eq(peticoes.id, id));
-}
-
-// ==================== PARTES ====================
-
-export async function listarPartesDb(userId: number) {
+export async function getAllBateladas(): Promise<Batelada[]> {
   const db = await getDb();
   if (!db) return [];
 
-  return await db.select().from(partes).where(eq(partes.userId, userId)).orderBy(desc(partes.createdAt));
+  return await db.select().from(bateladas).orderBy(bateladas.createdAt);
 }
 
-export async function obterParteDb(id: number) {
-  const db = await getDb();
-  if (!db) return undefined;
+// ==========================================
+// Batelada Processos
+// ==========================================
 
-  const result = await db.select().from(partes).where(eq(partes.id, id)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
-export async function salvarParte(parte: InsertParte) {
+export async function createBateladaProcesso(data: InsertBateladaProcesso): Promise<number> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(partes).values(parte);
-  return result;
+  const result = await db.insert(bateladaProcessos).values(data);
+  return Number(result[0].insertId);
 }
 
-export async function atualizarParte(id: number, dados: Partial<InsertParte>) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.update(partes).set(dados).where(eq(partes.id, id));
-}
-
-// ==================== ANEXOS ====================
-
-export async function listarAnexosPeticao(peticaoId: number) {
-  const db = await getDb();
-  if (!db) return [];
-
-  return await db.select().from(anexos).where(eq(anexos.peticaoId, peticaoId));
-}
-
-export async function salvarAnexo(anexo: InsertAnexo) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(anexos).values(anexo);
-  return result;
-}
-
-// ==================== MOVIMENTAÇÕES ====================
-
-export async function listarMovimentacoesProcesso(processoId: number) {
-  const db = await getDb();
-  if (!db) return [];
-
-  return await db.select().from(movimentacoes).where(eq(movimentacoes.processoId, processoId)).orderBy(desc(movimentacoes.dataMovimentacao));
-}
-
-export async function salvarMovimentacao(movimentacao: InsertMovimentacao) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(movimentacoes).values(movimentacao);
-  return result;
-}
-
-// ==================== CERTIFICADOS ====================
-
-export async function listarCertificadosDb() {
-  const db = await getDb();
-  if (!db) return [];
-
-  return await db.select().from(certificados).where(eq(certificados.ativo, true));
-}
-
-export async function salvarCertificado(certificado: InsertCertificado) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(certificados).values(certificado);
-  return result;
-}
-
-// ==================== NOTIFICAÇÕES ====================
-
-export async function listarNotificacoesDb(params?: { limit?: number; offset?: number; lida?: boolean }) {
-  const db = await getDb();
-  if (!db) return [];
-
-  if (params?.lida !== undefined) {
-    return await db
-      .select()
-      .from(notificacoes)
-      .where(eq(notificacoes.lida, params.lida))
-      .orderBy(desc(notificacoes.createdAt))
-      .limit(params?.limit || 50)
-      .offset(params?.offset || 0);
-  }
-
-  return await db
-    .select()
-    .from(notificacoes)
-    .orderBy(desc(notificacoes.createdAt))
-    .limit(params?.limit || 50)
-    .offset(params?.offset || 0);
-}
-
-export async function salvarNotificacao(notificacao: InsertNotificacao) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(notificacoes).values(notificacao);
-  return result;
-}
-
-export async function marcarNotificacaoLida(id: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  await db.update(notificacoes).set({ lida: true }).where(eq(notificacoes.id, id));
-}
-
-// ==================== WEBHOOK CONFIG ====================
-
-export async function obterWebhookConfig() {
-  const db = await getDb();
-  if (!db) return undefined;
-
-  const result = await db.select().from(webhookConfig).where(eq(webhookConfig.ativo, true)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
-}
-
-export async function salvarWebhookConfig(config: InsertWebhookConfig) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(webhookConfig).values(config);
-  return result;
-}
-
-// ==================== RELAÇÕES PETIÇÕES-PARTES ====================
-
-export async function vincularPartePeticao(vinculo: InsertPeticaoParte) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-
-  const result = await db.insert(peticoesPartes).values(vinculo);
-  return result;
-}
-
-export async function listarPartesPeticao(peticaoId: number) {
+export async function getBateladaProcessos(bateladaId: number): Promise<BateladaProcesso[]> {
   const db = await getDb();
   if (!db) return [];
 
   return await db
-    .select({
-      parte: partes,
-      polo: peticoesPartes.polo,
-    })
-    .from(peticoesPartes)
-    .innerJoin(partes, eq(peticoesPartes.parteId, partes.id))
-    .where(eq(peticoesPartes.peticaoId, peticaoId));
+    .select()
+    .from(bateladaProcessos)
+    .where(eq(bateladaProcessos.bateladaId, bateladaId));
+}
+
+export async function updateBateladaProcesso(id: number, data: Partial<BateladaProcesso>): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(bateladaProcessos).set(data).where(eq(bateladaProcessos.id, id));
+}
+
+// ==========================================
+// Logs de Auditoria
+// ==========================================
+
+export async function createLogAuditoria(data: InsertLogAuditoria): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(logsAuditoria).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function getLogsByBatelada(bateladaId: number): Promise<LogAuditoria[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(logsAuditoria)
+    .where(eq(logsAuditoria.bateladaId, bateladaId))
+    .orderBy(logsAuditoria.createdAt);
+}
+
+export async function getLogsByProcesso(bateladaProcessoId: number): Promise<LogAuditoria[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(logsAuditoria)
+    .where(eq(logsAuditoria.bateladaProcessoId, bateladaProcessoId))
+    .orderBy(logsAuditoria.createdAt);
+}
+
+// ==========================================
+// Arquivos Enviados
+// ==========================================
+
+export async function createArquivoEnviado(data: InsertArquivoEnviado): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(arquivosEnviados).values(data);
+  return Number(result[0].insertId);
+}
+
+export async function getArquivosByProcesso(bateladaProcessoId: number): Promise<ArquivoEnviado[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(arquivosEnviados)
+    .where(eq(arquivosEnviados.bateladaProcessoId, bateladaProcessoId));
 }

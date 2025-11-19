@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, decimal } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, json } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -19,211 +19,149 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Processos judiciais importados ou criados via API LegalMail
+ * Configurações de tribunais
+ * Armazena configurações padrão para cada tribunal (tipo de petição, tipo de anexo, certificado)
  */
-export const processos = mysqlTable("processos", {
+export const tribunalConfigs = mysqlTable("tribunal_configs", {
   id: int("id").autoincrement().primaryKey(),
-  idprocessos: int("idprocessos").notNull().unique(), // ID do processo no LegalMail
-  hashProcesso: varchar("hashProcesso", { length: 255 }),
-  numeroProcesso: varchar("numeroProcesso", { length: 50 }).notNull(),
-  juizo: text("juizo"),
-  valorCausa: varchar("valorCausa", { length: 20 }),
-  tribunal: varchar("tribunal", { length: 50 }),
-  sistemaTribunal: varchar("sistemaTribunal", { length: 50 }),
-  processoTema: text("processoTema"),
-  poloativoNome: text("poloativoNome"),
-  polopassivoNome: text("polopassivoNome"),
-  abreviaturaClasse: varchar("abreviaturaClasse", { length: 50 }),
-  nomeClasse: text("nomeClasse"),
-  foro: text("foro"),
-  inboxAtual: varchar("inboxAtual", { length: 50 }),
-  lastImport: timestamp("lastImport"),
-  arquivado: boolean("arquivado").default(false).notNull(),
+  codigoTribunal: varchar("codigoTribunal", { length: 10 }).notNull().unique(), // Ex: "8.09" para TJGO
+  nomeTribunal: varchar("nomeTribunal", { length: 100 }).notNull(), // Ex: "TJGO"
+  nomeCompleto: text("nomeCompleto"), // Ex: "Tribunal de Justiça de Goiás"
+  sistema: varchar("sistema", { length: 50 }), // Ex: "projudi", "pje"
+  
+  // Configurações padrão
+  tipoPeticaoPadrao: int("tipoPeticaoPadrao"), // fk_peca padrão
+  tipoPeticaoPadraoNome: varchar("tipoPeticaoPadraoNome", { length: 255 }),
+  tipoAnexoPadrao: int("tipoAnexoPadrao"), // fk_documentos_tipos padrão
+  tipoAnexoPadraoNome: varchar("tipoAnexoPadraoNome", { length: 255 }),
+  certificadoPadrao: int("certificadoPadrao").default(2562), // ID do certificado (Wesley padrão)
+  certificadoPadraoNome: varchar("certificadoPadraoNome", { length: 255 }).default("WESLEY FANTINI DE ABREU"),
+  
+  // Tipos disponíveis (JSON)
+  tiposPeticaoDisponiveis: json("tiposPeticaoDisponiveis").$type<Array<{id: number, nome: string}>>(),
+  tiposAnexoDisponiveis: json("tiposAnexoDisponiveis").$type<Array<{id: number, nome: string}>>(),
+  
+  ultimaSincronizacao: timestamp("ultimaSincronizacao"),
+  ativo: boolean("ativo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
-export type Processo = typeof processos.$inferSelect;
-export type InsertProcesso = typeof processos.$inferInsert;
+export type TribunalConfig = typeof tribunalConfigs.$inferSelect;
+export type InsertTribunalConfig = typeof tribunalConfigs.$inferInsert;
 
 /**
- * Petições (iniciais e intermediárias)
+ * Bateladas de protocolização
+ * Agrupa múltiplos processos enviados juntos
  */
-export const peticoes = mysqlTable("peticoes", {
+export const bateladas = mysqlTable("bateladas", {
   id: int("id").autoincrement().primaryKey(),
-  idpeticoes: int("idpeticoes").unique(), // ID da petição no LegalMail (após criação)
-  idprocessos: int("idprocessos"), // ID do processo no LegalMail
-  processoId: int("processoId"), // FK para tabela local de processos
+  descricao: varchar("descricao", { length: 255 }),
+  totalProcessos: int("totalProcessos").default(0).notNull(),
+  totalArquivos: int("totalArquivos").default(0).notNull(),
+  sucessos: int("sucessos").default(0).notNull(),
+  falhas: int("falhas").default(0).notNull(),
+  
+  status: mysqlEnum("status", ["pendente", "processando", "concluido", "parado", "erro"]).default("pendente").notNull(),
+  
+  certificadoId: int("certificadoId"),
+  certificadoNome: varchar("certificadoNome", { length: 255 }),
+  
+  iniciadoEm: timestamp("iniciadoEm"),
+  concluidoEm: timestamp("concluidoEm"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Batelada = typeof bateladas.$inferSelect;
+export type InsertBatelada = typeof bateladas.$inferInsert;
+
+/**
+ * Processos de uma batelada
+ * Cada processo dentro de uma batelada
+ */
+export const bateladaProcessos = mysqlTable("batelada_processos", {
+  id: int("id").autoincrement().primaryKey(),
+  bateladaId: int("bateladaId").notNull(),
+  
+  numeroCNJ: varchar("numeroCNJ", { length: 30 }).notNull(),
+  codigoTribunal: varchar("codigoTribunal", { length: 10 }),
+  
+  idprocessos: int("idprocessos"), // ID do processo no LegalMail (após buscar)
+  idpeticoes: int("idpeticoes"), // ID da petição criada no LegalMail
   hashPeticao: varchar("hashPeticao", { length: 255 }),
-  hashProcesso: varchar("hashProcesso", { length: 255 }),
-  tipo: mysqlEnum("tipo", ["inicial", "intermediaria"]).notNull(),
-  status: varchar("status", { length: 50 }).default("rascunho").notNull(), // rascunho, enviada, protocolada, erro
   
-  // Dados da petição inicial
-  ufTribunal: varchar("ufTribunal", { length: 2 }),
-  tribunal: varchar("tribunal", { length: 50 }),
-  sistema: varchar("sistema", { length: 50 }),
-  instancia: varchar("instancia", { length: 20 }),
-  comarca: text("comarca"),
-  competencia: varchar("competencia", { length: 100 }),
-  area: varchar("area", { length: 100 }),
-  classe: text("classe"),
-  rito: varchar("rito", { length: 100 }),
-  assunto: text("assunto"),
-  tipoProcesso: varchar("tipoProcesso", { length: 100 }),
-  tipoJustica: varchar("tipoJustica", { length: 100 }),
-  valorCausa: varchar("valorCausa", { length: 20 }),
-  liminar: boolean("liminar").default(false),
-  sigilo: boolean("sigilo").default(false),
-  gratuidade: boolean("gratuidade").default(false),
-  prioridade: boolean("prioridade").default(false),
-  motivoPrioridade: text("motivoPrioridade"),
-  distribuicao: varchar("distribuicao", { length: 50 }),
-  processoReferencia: varchar("processoReferencia", { length: 50 }),
-  fundamentoLegal: text("fundamentoLegal"),
-  motivoSigilo: text("motivoSigilo"),
-  atividadeEconomica: varchar("atividadeEconomica", { length: 100 }),
+  arquivoPrincipal: varchar("arquivoPrincipal", { length: 500 }),
+  totalAnexos: int("totalAnexos").default(0),
   
-  // Arquivos
-  arquivoPrincipalUrl: text("arquivoPrincipalUrl"),
-  arquivoPrincipalKey: text("arquivoPrincipalKey"),
+  status: mysqlEnum("status", ["pendente", "processando", "sucesso", "erro"]).default("pendente").notNull(),
+  mensagemErro: text("mensagemErro"),
   
-  // Metadados
-  dadosCompletos: text("dadosCompletos"), // JSON com todos os dados enviados
-  erroMensagem: text("erroMensagem"),
-  userId: int("userId").notNull(), // Usuário que criou
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
-export type Peticao = typeof peticoes.$inferSelect;
-export type InsertPeticao = typeof peticoes.$inferInsert;
+export type BateladaProcesso = typeof bateladaProcessos.$inferSelect;
+export type InsertBateladaProcesso = typeof bateladaProcessos.$inferInsert;
 
 /**
- * Partes processuais (autores, réus, advogados, etc)
+ * LOG detalhado de auditoria
+ * Registra CADA etapa do processamento com request/response completo
  */
-export const partes = mysqlTable("partes", {
+export const logsAuditoria = mysqlTable("logs_auditoria", {
   id: int("id").autoincrement().primaryKey(),
-  idpartes: int("idpartes").unique(), // ID da parte no LegalMail
-  nome: text("nome").notNull(),
-  tipoParte: varchar("tipoParte", { length: 50 }).notNull(), // autor, reu, advogado, testemunha, etc
-  tipoDocumento: varchar("tipoDocumento", { length: 20 }), // CPF, CNPJ, RG, etc
-  numeroDocumento: varchar("numeroDocumento", { length: 50 }),
-  profissao: varchar("profissao", { length: 100 }),
-  orgaoExpedidor: varchar("orgaoExpedidor", { length: 50 }),
-  email: varchar("email", { length: 320 }),
-  telefone: varchar("telefone", { length: 20 }),
-  endereco: text("endereco"),
-  cidade: varchar("cidade", { length: 100 }),
-  estado: varchar("estado", { length: 2 }),
-  cep: varchar("cep", { length: 10 }),
-  oab: varchar("oab", { length: 20 }), // Para advogados
-  ufOab: varchar("ufOab", { length: 2 }), // Para advogados
-  dadosCompletos: text("dadosCompletos"), // JSON com dados adicionais
-  userId: int("userId").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Parte = typeof partes.$inferSelect;
-export type InsertParte = typeof partes.$inferInsert;
-
-/**
- * Relação entre petições e partes (polo ativo/passivo)
- */
-export const peticoesPartes = mysqlTable("peticoes_partes", {
-  id: int("id").autoincrement().primaryKey(),
-  peticaoId: int("peticaoId").notNull(),
-  parteId: int("parteId").notNull(),
-  polo: mysqlEnum("polo", ["ativo", "passivo"]).notNull(),
+  bateladaId: int("bateladaId").notNull(),
+  bateladaProcessoId: int("bateladaProcessoId"),
+  
+  numeroCNJ: varchar("numeroCNJ", { length: 30 }),
+  etapa: varchar("etapa", { length: 100 }).notNull(), // Ex: "buscar_processo", "criar_peticao", "upload_pdf", "protocolar"
+  
+  requestUrl: text("requestUrl"),
+  requestMethod: varchar("requestMethod", { length: 10 }),
+  requestPayload: json("requestPayload").$type<any>(),
+  
+  responseStatus: int("responseStatus"),
+  responsePayload: json("responsePayload").$type<any>(),
+  
+  status: mysqlEnum("status", ["sucesso", "erro", "warning"]).notNull(),
+  mensagem: text("mensagem"),
+  erro: text("erro"),
+  
+  tempoExecucaoMs: int("tempoExecucaoMs"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
-export type PeticaoParte = typeof peticoesPartes.$inferSelect;
-export type InsertPeticaoParte = typeof peticoesPartes.$inferInsert;
+export type LogAuditoria = typeof logsAuditoria.$inferSelect;
+export type InsertLogAuditoria = typeof logsAuditoria.$inferInsert;
 
 /**
- * Anexos de petições
+ * Arquivos enviados
+ * Rastreia cada arquivo PDF enviado
  */
-export const anexos = mysqlTable("anexos", {
+export const arquivosEnviados = mysqlTable("arquivos_enviados", {
   id: int("id").autoincrement().primaryKey(),
-  peticaoId: int("peticaoId").notNull(),
-  tipoDocumento: varchar("tipoDocumento", { length: 100 }).notNull(),
-  nomeArquivo: text("nomeArquivo").notNull(),
-  arquivoUrl: text("arquivoUrl").notNull(),
-  arquivoKey: text("arquivoKey").notNull(),
+  bateladaProcessoId: int("bateladaProcessoId").notNull(),
+  
+  nomeOriginal: varchar("nomeOriginal", { length: 500 }).notNull(),
+  nomeNormalizado: varchar("nomeNormalizado", { length: 500 }).notNull(),
+  
+  numeroCNJ: varchar("numeroCNJ", { length: 30 }),
+  codProc: int("codProc"),
+  codPet: int("codPet"),
+  descricao: text("descricao"),
+  
+  isPrincipal: boolean("isPrincipal").default(false).notNull(),
   tamanhoBytes: int("tamanhoBytes"),
+  
+  s3Key: varchar("s3Key", { length: 500 }),
+  s3Url: text("s3Url"),
+  
+  uploadStatus: mysqlEnum("uploadStatus", ["pendente", "sucesso", "erro"]).default("pendente").notNull(),
+  uploadErro: text("uploadErro"),
+  
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
-export type Anexo = typeof anexos.$inferSelect;
-export type InsertAnexo = typeof anexos.$inferInsert;
-
-/**
- * Movimentações/autos dos processos
- */
-export const movimentacoes = mysqlTable("movimentacoes", {
-  id: int("id").autoincrement().primaryKey(),
-  idmovimentacoes: int("idmovimentacoes").unique(), // ID no LegalMail
-  processoId: int("processoId").notNull(),
-  fkProcesso: int("fkProcesso"), // ID do processo no LegalMail
-  titulo: text("titulo"),
-  dataMovimentacao: timestamp("dataMovimentacao"),
-  conteudo: text("conteudo"),
-  tipo: varchar("tipo", { length: 50 }), // auto, intimacao, despacho, etc
-  documentoUrl: text("documentoUrl"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type Movimentacao = typeof movimentacoes.$inferSelect;
-export type InsertMovimentacao = typeof movimentacoes.$inferInsert;
-
-/**
- * Certificados digitais cadastrados no workspace
- */
-export const certificados = mysqlTable("certificados", {
-  id: int("id").autoincrement().primaryKey(),
-  idcertificados: int("idcertificados").notNull().unique(), // ID no LegalMail
-  advogadoNome: text("advogadoNome").notNull(),
-  vencimento: varchar("vencimento", { length: 20 }),
-  ativo: boolean("ativo").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type Certificado = typeof certificados.$inferSelect;
-export type InsertCertificado = typeof certificados.$inferInsert;
-
-/**
- * Notificações recebidas via webhook do LegalMail
- */
-export const notificacoes = mysqlTable("notificacoes", {
-  id: int("id").autoincrement().primaryKey(),
-  processoId: int("processoId"),
-  idprocessos: int("idprocessos"), // ID do processo no LegalMail
-  tipo: varchar("tipo", { length: 50 }).notNull(), // intimacao, atualizacao, etc
-  titulo: text("titulo"),
-  conteudo: text("conteudo"),
-  payload: text("payload"), // JSON completo do webhook
-  lida: boolean("lida").default(false).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type Notificacao = typeof notificacoes.$inferSelect;
-export type InsertNotificacao = typeof notificacoes.$inferInsert;
-
-/**
- * Configurações do webhook
- */
-export const webhookConfig = mysqlTable("webhook_config", {
-  id: int("id").autoincrement().primaryKey(),
-  endpoint: text("endpoint").notNull(),
-  keyEndpoint: varchar("keyEndpoint", { length: 255 }),
-  nomeAplicacao: varchar("nomeAplicacao", { length: 100 }).notNull(),
-  ativo: boolean("ativo").default(true).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type WebhookConfig = typeof webhookConfig.$inferSelect;
-export type InsertWebhookConfig = typeof webhookConfig.$inferInsert;
+export type ArquivoEnviado = typeof arquivosEnviados.$inferSelect;
+export type InsertArquivoEnviado = typeof arquivosEnviados.$inferInsert;

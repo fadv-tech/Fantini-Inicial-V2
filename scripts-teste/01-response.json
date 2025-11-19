@@ -1,0 +1,555 @@
+[
+  {
+    "tribunal": "SEEU",
+    "sistemas": [
+      "projudi"
+    ]
+  },
+  {
+    "tribunal": "STF",
+    "sistemas": [
+      "portal_stf"
+    ]
+  },
+  {
+    "tribunal": "STJ",
+    "sistemas": [
+      "central_do_processo_eletronico"
+    ]
+  },
+  {
+    "tribunal": "STM",
+    "sistemas": [
+      "eproc"
+    ]
+  },
+  {
+    "tribunal": "TJAC",
+    "sistemas": [
+      "eproc",
+      "esaj"
+    ]
+  },
+  {
+    "tribunal": "TJAL",
+    "sistemas": [
+      "esaj"
+    ]
+  },
+  {
+    "tribunal": "TJAM",
+    "sistemas": [
+      "esaj",
+      "projudi"
+    ]
+  },
+  {
+    "tribunal": "TJAP",
+    "sistemas": [
+      "pje",
+      "tucujuris"
+    ]
+  },
+  {
+    "tribunal": "TJBA",
+    "sistemas": [
+      "pje",
+      "projudi"
+    ]
+  },
+  {
+    "tribunal": "TJCE",
+    "sistemas": [
+      "esaj",
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJDF",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJES",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJGO",
+    "sistemas": [
+      "projudi"
+    ]
+  },
+  {
+    "tribunal": "TJMA",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJMG",
+    "sistemas": [
+      "eproc",
+      "jpe",
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJMS",
+    "sistemas": [
+      "esaj"
+    ]
+  },
+  {
+    "tribunal": "TJMT",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJPA",
+    "sistemas": [
+      "pje",
+      "projudi"
+    ]
+  },
+  {
+    "tribunal": "TJPB",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJPE",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJPI",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJPR",
+    "sistemas": [
+      "projudi"
+    ]
+  },
+  {
+    "tribunal": "TJRJ",
+    "sistemas": [
+      "dcp",
+      "eproc",
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJRN",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJRO",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TJRR",
+    "sistemas": [
+      "projudi",
+      "sei"
+    ]
+  },
+  {
+    "tribunal": "TJRS",
+    "sistemas": [
+      "eproc"
+    ]
+  },
+  {
+    "tribunal": "TJSC",
+    "sistemas": [
+      "eproc"
+    ]
+  },
+  {
+    "tribunal": "TJSE",
+    "sistemas": [
+      "portal"
+    ]
+  },
+  {
+    "tribunal": "TJSP",
+    "sistemas": [
+      "eproc",
+      "esaj"
+    ]
+  },
+  {
+    "tribunal": "TJTO",
+    "sistemas": [
+      "eproc"
+    ]
+  },
+  {
+    "tribunal": "TNU",
+    "sistemas": [
+      "eproc"
+    ]
+  },
+  {
+    "tribunal": "TRE-AL",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-AM",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-AP",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-BA",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-CE",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-DF",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-ES",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-GO",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-MA",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-MG",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-MS",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-MT",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-PA",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-PB",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-PE",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-PI",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-PR",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-RJ",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-RN",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-RO",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-RR",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-RS",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-SC",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-SE",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-SP",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRE-TO",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRF-1",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRF-2",
+    "sistemas": [
+      "eproc",
+      "eproc_jfes",
+      "eproc_jfrj"
+    ]
+  },
+  {
+    "tribunal": "TRF-3",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRF-4",
+    "sistemas": [
+      "eproc",
+      "eproc_jfpr",
+      "eproc_jfrs",
+      "eproc_jfsc"
+    ]
+  },
+  {
+    "tribunal": "TRF-5",
+    "sistemas": [
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRF-6",
+    "sistemas": [
+      "eproc",
+      "eproc_jfmg",
+      "pje"
+    ]
+  },
+  {
+    "tribunal": "TRT-1",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-2",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-3",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-4",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-5",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-6",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-7",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-8",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-9",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-10",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-11",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-12",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-13",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-14",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-15",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-16",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-17",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-18",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-19",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-20",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-21",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-22",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-23",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TRT-24",
+    "sistemas": [
+      "pje_trt"
+    ]
+  },
+  {
+    "tribunal": "TST",
+    "sistemas": [
+      "pje_trt"
+    ]
+  }
+]
