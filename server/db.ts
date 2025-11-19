@@ -277,3 +277,41 @@ export async function getArquivosByProcesso(bateladaProcessoId: number): Promise
     .from(arquivosEnviados)
     .where(eq(arquivosEnviados.bateladaProcessoId, bateladaProcessoId));
 }
+
+
+/**
+ * Busca todos os arquivos de uma batelada
+ * Como arquivosEnviados não tem bateladaId direto, precisamos fazer JOIN com bateladaProcessos
+ */
+export async function getArquivosByBatelada(bateladaId: number): Promise<ArquivoEnviado[]> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get arquivos: database not available");
+    return [];
+  }
+
+  // JOIN: arquivosEnviados -> bateladaProcessos -> bateladas
+  const result = await db
+    .select({
+      id: arquivosEnviados.id,
+      bateladaProcessoId: arquivosEnviados.bateladaProcessoId,
+      nomeOriginal: arquivosEnviados.nomeOriginal,
+      nomeNormalizado: arquivosEnviados.nomeNormalizado,
+      numeroCNJ: arquivosEnviados.numeroCNJ,
+      codProc: arquivosEnviados.codProc,
+      codPet: arquivosEnviados.codPet,
+      descricao: arquivosEnviados.descricao,
+      isPrincipal: arquivosEnviados.isPrincipal,
+      tamanhoBytes: arquivosEnviados.tamanhoBytes,
+      s3Key: arquivosEnviados.s3Key,
+      s3Url: arquivosEnviados.s3Url,
+      uploadStatus: arquivosEnviados.uploadStatus,
+      uploadErro: arquivosEnviados.uploadErro,
+      createdAt: arquivosEnviados.createdAt,
+    })
+    .from(arquivosEnviados)
+    .innerJoin(bateladaProcessos, eq(arquivosEnviados.bateladaProcessoId, bateladaProcessos.id))
+    .where(eq(bateladaProcessos.bateladaId, bateladaId));
+
+  return result;
+}

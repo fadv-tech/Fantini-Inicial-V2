@@ -177,8 +177,10 @@
 - [x] Criar procedures de configuração (syncTribunalWithLegalMail, updateTribunalConfig, applyToAllTribunals)
 - [x] Criar procedures de upload (uploadFiles com Base64)
 - [x] Criar procedures de batelada (listBatches, getBatchDetails)
-- [ ] Implementar SSE para progresso em tempo real
-- [ ] Implementar sendBatch (protocolização em background)
+- [x] Implementar SSE para progresso em tempo real (server/sse.ts)
+- [x] Implementar sendBatch (protocolização em background)
+- [x] Criar send-batch.ts com processBatch e processarProcesso
+- [ ] Completar implementação de processarProcesso (buscar arquivos do storage, upload real, protocolar)
 
 
 ## 🎨 Fase 12: Interface SendPetition
@@ -198,13 +200,16 @@
 
 ## 🔄 Fase 13: SSE e Protocolização em Background
 
-- [ ] Implementar endpoint SSE em server/
-- [ ] Criar sendBatch procedure com background processing
-- [ ] Emitir eventos SSE de progresso
-- [ ] Implementar botão "Parar" via SSE
-- [ ] LOG detalhado de cada etapa (buscar processo, criar petição, upload, protocolar)
-- [ ] Tratamento de erros (processo não encontrado, etc.)
-- [ ] Atualizar status da batelada no banco
+- [x] Implementar endpoint SSE em server/sse.ts
+- [x] Criar sendBatch procedure com background processing
+- [x] Emitir eventos SSE de progresso
+- [x] Implementar lógica de parada via SSE (flag shouldStop)
+- [x] LOG detalhado de cada etapa (buscar processo, criar petição, upload, protocolar)
+- [x] Tratamento de erros (processo não encontrado, etc.)
+- [x] Atualizar status da batelada no banco
+- [ ] Integrar SSE no frontend (SendPetition.tsx)
+- [ ] Completar implementação de upload de arquivos do storage
+- [ ] Completar implementação de protocolização final
 
 ## ⚙️ Fase 14: Página de Configurações
 

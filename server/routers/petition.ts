@@ -334,10 +334,61 @@ export const getBatchDetails = protectedProcedure
     };
   });
 
+/**
+ * Inicia processamento de uma batelada em background
+ */
+export const sendBatch = protectedProcedure
+  .input(
+    z.object({
+      bateladaId: z.number(),
+      certificadoId: z.number(),
+    })
+  )
+  .mutation(async ({ input }) => {
+    const { bateladaId, certificadoId } = input;
+
+    try {
+      // Verificar se batelada existe
+      const batelada = await getBatelada(bateladaId);
+      if (!batelada) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Batelada não encontrada",
+        });
+      }
+
+      // Atualizar status para "processando"
+      await updateBatelada(bateladaId, {
+        status: "processando",
+      });
+
+      // Importar e iniciar processamento em background
+      const { processBatch } = await import("../send-batch");
+      
+      // Executar em background (não aguardar)
+      processBatch(bateladaId, certificadoId).catch((error) => {
+        console.error(`[sendBatch] Erro fatal na batelada ${bateladaId}:`, error);
+      });
+
+      return {
+        success: true,
+        bateladaId,
+        message: "Processamento iniciado em background",
+      };
+    } catch (error) {
+      console.error("[sendBatch] Erro:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: error instanceof Error ? error.message : "Erro ao iniciar processamento",
+      });
+    }
+  });
+
 export const petitionRouter = router({
   listCertificates,
   parseFiles,
   uploadFiles,
   listBatches,
   getBatchDetails,
+  sendBatch,
 });
