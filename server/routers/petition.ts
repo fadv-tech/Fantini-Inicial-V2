@@ -7,6 +7,7 @@ import { z } from "zod";
 import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { legalMailRequest } from "../legalmail-client";
+import { verificarPeticaoLegalMail, verificarPeticoesEmLote } from "../verificacao-peticao";
 import { hybridStoragePut, calculateFileHash, generateUniqueFileName } from "../hybrid-storage";
 import { parsePdfFileName, groupAndIdentifyMainFiles, type ParsedFile } from "../../shared/pdfParser";
 import {
@@ -384,6 +385,26 @@ export const sendBatch = protectedProcedure
     }
   });
 
+/**
+ * Verifica status de uma petição no LegalMail
+ */
+export const verificarPeticao = protectedProcedure
+  .input(z.object({ idPeticoes: z.number() }))
+  .query(async ({ input }) => {
+    const resultado = await verificarPeticaoLegalMail(input.idPeticoes);
+    return resultado;
+  });
+
+/**
+ * Verifica status de múltiplas petições em lote
+ */
+export const verificarPeticoesLote = protectedProcedure
+  .input(z.object({ idPeticoes: z.array(z.number()) }))
+  .query(async ({ input }) => {
+    const resultados = await verificarPeticoesEmLote(input.idPeticoes);
+    return resultados;
+  });
+
 export const petitionRouter = router({
   listCertificates,
   parseFiles,
@@ -391,4 +412,6 @@ export const petitionRouter = router({
   listBatches,
   getBatchDetails,
   sendBatch,
+  verificarPeticao,
+  verificarPeticoesLote,
 });

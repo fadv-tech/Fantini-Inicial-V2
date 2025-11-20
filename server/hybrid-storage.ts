@@ -16,7 +16,7 @@ const LOCAL_UPLOADS_DIR = path.join(process.cwd(), 'uploads');
 /**
  * Detecta se está rodando em ambiente Manus Cloud ou local
  */
-function isManusCloud(): boolean {
+export function isManusCloud(): boolean {
   return !!(ENV.forgeApiUrl && ENV.forgeApiKey);
 }
 

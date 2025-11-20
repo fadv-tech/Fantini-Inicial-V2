@@ -1,6 +1,7 @@
 import { sseManager } from "./sse-progress";
 import { legalMailRequest } from "./legalmail-client";
 import { hybridStoragePut, calculateFileHash, hybridStorageRead, bufferToBase64 } from "./hybrid-storage";
+import { arquivarPDF, truncarPayloadBase64 } from "./arquivo-permanente";
 import { 
   updateBatelada, 
   createBateladaProcesso, 
@@ -353,6 +354,21 @@ async function processarProcesso(
   // Ler arquivo do storage híbrido (S3 ou local)
   const pdfBuffer = await hybridStorageRead(arquivoPrincipalData.s3Key);
   const pdfBase64 = bufferToBase64(pdfBuffer);
+  
+  // Arquivar PDF permanentemente (pasta eterna)
+  const { caminhoCompleto: arquivoPermanentePath, url: arquivoPermanenteUrl } = await arquivarPDF(
+    pdfBuffer,
+    processo.numeroCNJ,
+    "PETICAO-INICIAL",
+    processo.principal.originalName
+  );
+  
+  sseManager.sendEvent(bateladaId, "log", {
+    type: "log",
+    timestamp: new Date().toLocaleTimeString("pt-BR"),
+    message: `💾 Arquivo arquivado permanentemente: ${arquivoPermanentePath}`,
+    level: "info",
+  });
 
   // Upload do PDF principal via API LegalMail
   const uploadPdfPayload = {
@@ -381,7 +397,10 @@ async function processarProcesso(
     mensagem: `PDF principal enviado: ${processo.principal.originalName} (${Math.round(pdfBuffer.length / 1024)} KB)`,
     requestUrl: "/api/v1/petition/file",
     requestMethod: "POST",
-    requestPayload: { ...uploadPdfPayload, arquivo: `[Base64: ${Math.round(pdfBuffer.length / 1024)} KB]` },
+    requestPayload: {
+      ...uploadPdfPayload,
+      arquivo: truncarPayloadBase64(pdfBase64, pdfBuffer.length), // Truncar Base64
+    },
     responseStatus: 200,
     responsePayload: uploadPdfResult,
     tempoExecucaoMs: Date.now() - stepStart,
@@ -443,7 +462,10 @@ async function processarProcesso(
       mensagem: `Anexo enviado: ${anexo.originalName} (${Math.round(anexoBuffer.length / 1024)} KB)`,
       requestUrl: "/api/v1/petition/attachments",
       requestMethod: "POST",
-      requestPayload: { ...uploadAnexoPayload, arquivo: `[Base64: ${Math.round(anexoBuffer.length / 1024)} KB]` },
+      requestPayload: {
+        ...uploadAnexoPayload,
+        arquivo: truncarPayloadBase64(anexoBase64, anexoBuffer.length), // Truncar Base64
+      },
       responseStatus: 200,
       responsePayload: uploadAnexoResult,
       tempoExecucaoMs: Date.now() - stepStart,

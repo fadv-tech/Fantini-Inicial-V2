@@ -26,7 +26,7 @@ import { toast } from "sonner";
 interface ParsedFile {
   name: string;
   size: number;
-  base64: string;
+  file?: File; // Arquivo original (sem Base64)
   cnj: string;
   codProc: string;
   codPet: string;
@@ -79,17 +79,22 @@ export default function SendPetition() {
     setLogs(prev => [{ timestamp, message, type }, ...prev]);
   }, []);
 
-  // Converter arquivo para base64
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64 = reader.result as string;
-        resolve(base64.split(",")[1]); // Remove "data:application/pdf;base64,"
-      };
-      reader.onerror = reject;
+  // Upload via FormData (sem Base64)
+  const uploadViaFormData = async (files: File[]): Promise<any> => {
+    const formData = new FormData();
+    files.forEach(file => formData.append("files", file));
+    
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
     });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Erro ao fazer upload");
+    }
+    
+    return response.json();
   };
 
   // Dropzone
@@ -97,27 +102,18 @@ export default function SendPetition() {
     try {
       addLog(`📥 ${acceptedFiles.length} arquivo(s) recebido(s)`, "info");
       
-      // Converter para base64
-      const filesWithBase64 = await Promise.all(
-        acceptedFiles.map(async (file) => ({
-          name: file.name,
-          size: file.size,
-          base64: await fileToBase64(file),
-        }))
-      );
-
       addLog("🔍 Analisando nomes dos arquivos...", "info");
 
       // Fazer parsing dos nomes
       const result = await parseFilesMutation.mutateAsync({
-        fileNames: filesWithBase64.map(f => f.name),
+        fileNames: acceptedFiles.map(f => f.name),
       });
 
-      // Combinar parsed com base64
+      // Combinar parsed com File original (sem Base64)
       const parsedWithData = result.parsed.map((p, idx) => ({
         ...p,
-        base64: filesWithBase64[idx]!.base64,
-        size: filesWithBase64[idx]!.size,
+        file: acceptedFiles[idx], // Arquivo original
+        size: acceptedFiles[idx]!.size,
       }));
 
       setFiles(parsedWithData as any);
@@ -170,11 +166,22 @@ export default function SendPetition() {
       // Upload dos arquivos e criação da batelada
       const certificado = certificates?.find(c => c.id.toString() === selectedCertificate);
       
+      // Upload via FormData (sem Base64)
+      addLog("📤 Fazendo upload dos arquivos...", "info");
+      const uploadResult = await uploadViaFormData(files.map(f => f.file!).filter(Boolean));
+      
+      if (!uploadResult.success) {
+        throw new Error("Erro ao fazer upload dos arquivos");
+      }
+      
+      addLog(`✅ ${uploadResult.files.length} arquivo(s) enviado(s) com sucesso`, "success");
+      
+      // Criar batelada via tRPC (usando dados do upload FormData)
       const result = await uploadFilesMutation.mutateAsync({
-        files: files.map(f => ({
-          name: f.name,
-          size: f.size,
-          content: f.base64,
+        files: uploadResult.files.map((f: any) => ({
+          name: f.nomeOriginal,
+          size: f.tamanhoBytes,
+          content: "", // Não precisa mais de Base64, já está no storage
         })),
         certificadoId: parseInt(selectedCertificate),
         certificadoNome: certificado?.nome || "Desconhecido",

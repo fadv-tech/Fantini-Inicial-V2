@@ -305,6 +305,8 @@ export async function getArquivosByBatelada(bateladaId: number): Promise<Arquivo
       tamanhoBytes: arquivosEnviados.tamanhoBytes,
       s3Key: arquivosEnviados.s3Key,
       s3Url: arquivosEnviados.s3Url,
+      arquivoPermanentePath: arquivosEnviados.arquivoPermanentePath,
+      arquivoPermanenteUrl: arquivosEnviados.arquivoPermanenteUrl,
       uploadStatus: arquivosEnviados.uploadStatus,
       uploadErro: arquivosEnviados.uploadErro,
       createdAt: arquivosEnviados.createdAt,

@@ -424,3 +424,48 @@
 - [ ] Buscar arquivos da pasta permanente
 - [ ] Reprocessar apenas processos com status "erro"
 - [ ] Registrar tentativa de reprocessamento em logs_auditoria
+
+
+---
+
+## 🚀 Fase 23: Implementação dos 3 Próximos Passos (NOVA - Em Andamento)
+
+### 1️⃣ Arquivamento Permanente de PDFs:
+- [x] Criar server/arquivo-permanente.ts com função arquivarPDF()
+- [x] Estrutura de pastas: /arquivos-eternos/{ano}/{mes}/{dia}/
+- [x] Compatibilidade S3: usar hybridStoragePut() para salvar em S3
+- [x] Compatibilidade Ubuntu: usar fs.writeFileSync() para salvar localmente
+- [x] Adicionar campos arquivoPermanentePath e arquivoPermanenteUrl em drizzle/schema.ts
+- [x] Atualizar getArquivosByBatelada() para incluir novos campos
+- [x] Exportar isManusCloud() em hybrid-storage.ts
+- [x] Criar função truncarPayloadBase64() para logs
+- [x] Integrar arquivamento em send-batch.ts (após ler arquivo)
+- [x] Truncar payload Base64 nos logs de upload PDF principal
+- [x] Truncar payload Base64 nos logs de upload de anexos
+- [x] Adicionar log SSE "Arquivo arquivado permanentemente"
+- [ ] Executar pnpm db:push para criar colunas no banco
+- [ ] Testar arquivamento em S3 (Manus Cloud)
+- [ ] Testar arquivamento em filesystem (Ubuntu local)
+
+### 2️⃣ Verificação Automática de Petições:
+- [x] Criar server/verificacao-peticao.ts
+- [x] Função verificarPeticaoLegalMail(idPeticoes) - GET /api/v1/petition/status
+- [x] Função verificarPeticoesEmLote() para múltiplas petições
+- [x] Mapear status da API LegalMail (pendente, enviada, protocolada, rejeitada, erro)
+- [x] Preparar estrutura para robô Puppeteer (comentado, não implementar agora)
+- [x] Criar procedure tRPC verificarPeticao(idPeticoes)
+- [x] Criar procedure tRPC verificarPeticoesLote(idPeticoes[])
+- [x] Adicionar procedures ao petitionRouter
+- [ ] Criar interface no frontend para triggerar verificação manual
+- [ ] Testar verificação com API LegalMail real
+
+### 3️⃣ Atualizar Frontend para FormData:
+- [x] Modificar interface ParsedFile: remover base64, adicionar file?: File
+- [x] Substituir fileToBase64() por uploadViaFormData()
+- [x] Usar fetch('/api/upload') com FormData
+- [x] Manter compatibilidade com parseFiles (frontend)
+- [x] Atualizar onDrop para não converter para Base64
+- [x] Atualizar handleProtocolar para usar uploadViaFormData primeiro
+- [x] Integrar resultado do upload FormData com uploadFilesMutation
+- [ ] Testar upload de arquivos grandes (20MB+)
+- [ ] Adicionar progresso de upload (fetch com onProgress)

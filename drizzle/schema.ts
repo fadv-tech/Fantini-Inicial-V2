@@ -157,6 +157,10 @@ export const arquivosEnviados = mysqlTable("arquivos_enviados", {
   s3Key: varchar("s3Key", { length: 500 }),
   s3Url: text("s3Url"),
   
+  // Arquivamento permanente (pasta eterna)
+  arquivoPermanentePath: varchar("arquivoPermanentePath", { length: 500 }), // Caminho completo do arquivo arquivado
+  arquivoPermanenteUrl: text("arquivoPermanenteUrl"), // URL (se S3)
+  
   uploadStatus: mysqlEnum("uploadStatus", ["pendente", "sucesso", "erro"]).default("pendente").notNull(),
   uploadErro: text("uploadErro"),
   
