@@ -1,0 +1,40 @@
+{
+  "query": "SELECT codigoTribunal, nomeTribunal, tipoPeticaoPadrao, ultimaSincronizacao FROM tribunal_configs ORDER BY codigoTribunal LIMIT 5",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39QSeYhbNv3L4jg.846f4ba715a4 --database 2HAR2cejBwEBj6M7XczVcW --execute SELECT codigoTribunal, nomeTribunal, tipoPeticaoPadrao, ultimaSincronizacao FROM tribunal_configs ORDER BY codigoTribunal LIMIT 5",
+  "rows": [
+    {
+      "codigoTribunal": "8.01",
+      "nomeTribunal": "TJAC",
+      "tipoPeticaoPadrao": "NULL",
+      "ultimaSincronizacao": "NULL"
+    },
+    {
+      "codigoTribunal": "8.02",
+      "nomeTribunal": "TJAL",
+      "tipoPeticaoPadrao": "NULL",
+      "ultimaSincronizacao": "NULL"
+    },
+    {
+      "codigoTribunal": "8.03",
+      "nomeTribunal": "TJAP",
+      "tipoPeticaoPadrao": "NULL",
+      "ultimaSincronizacao": "NULL"
+    },
+    {
+      "codigoTribunal": "8.04",
+      "nomeTribunal": "TJAM",
+      "tipoPeticaoPadrao": "NULL",
+      "ultimaSincronizacao": "NULL"
+    },
+    {
+      "codigoTribunal": "8.05",
+      "nomeTribunal": "TJBA",
+      "tipoPeticaoPadrao": "NULL",
+      "ultimaSincronizacao": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "codigoTribunal\tnomeTribunal\ttipoPeticaoPadrao\tultimaSincronizacao\n8.01\tTJAC\tNULL\tNULL\n8.02\tTJAL\tNULL\tNULL\n8.03\tTJAP\tNULL\tNULL\n8.04\tTJAM\tNULL\tNULL\n8.05\tTJBA\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 601
+}

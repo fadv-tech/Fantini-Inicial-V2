@@ -33,13 +33,15 @@ export default function Configuracoes() {
   // Carregar configurações iniciais
   useEffect(() => {
     if (tribunaisLegalMail) {
+      console.log('[Configuracoes] Dados recebidos da API:', tribunaisLegalMail);
       const initialConfigs: TribunalConfig[] = tribunaisLegalMail.map((t: any) => ({
-        codigoTribunal: t.codigo,
-        nomeTribunal: t.nome,
-        tipoPeticaoPadrao: null,
-        tipoAnexoPadrao: null,
-        sincronizado: false,
+        codigoTribunal: t.codigoTribunal,
+        nomeTribunal: t.nomeTribunal,
+        tipoPeticaoPadrao: t.tipoPeticaoPadrao || null,
+        tipoAnexoPadrao: t.tipoAnexoPadrao || null,
+        sincronizado: !!t.ultimaSincronizacao,
       }));
+      console.log('[Configuracoes] Configs mapeados:', initialConfigs);
       setConfigs(initialConfigs);
     }
   }, [tribunaisLegalMail]);
