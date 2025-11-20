@@ -501,3 +501,55 @@
 - [x] Criar função renderVerificationBadge() para badges visuais
 - [x] Exibir numeroProtocolo, dataProtocolo e mensagemErro no dialog
 - [x] Adicionar toast de sucesso/erro após verificação
+
+
+## 🐛 Fase 25: Correção de Bugs Críticos (CONCLUÍDO)
+
+### Endpoints da API LegalMail
+- [x] Auditoria completa de 31 endpoints contra documentação OpenAPI
+- [x] Corrigir endpoint de certificados: /api/v1/certificate → /api/v1/workspace/certificates
+- [x] Corrigir endpoint de busca de processo: /api/v1/process → /api/v1/process/detail
+- [x] Corrigir endpoint de protocolização: /api/v1/petition/protocol → /api/v1/petition/intermediate/send
+- [x] Documentar todas as correções em CORRECAO-ENDPOINTS.md
+
+### Bug na Página de Configurações
+- [x] Identificar causa raiz: mapeamento errado de campos (t.codigo vs t.codigoTribunal)
+- [x] Corrigir mapeamento em Configuracoes.tsx (linhas 34-47)
+- [x] Adicionar carregamento de valores existentes (tipoPeticaoPadrao, tipoAnexoPadrao)
+- [x] Adicionar detecção de sincronização (!!t.ultimaSincronizacao)
+- [x] Adicionar console.log para debug
+- [x] Documentar em RESUMO-CORRECOES.md
+
+### Validação
+- [x] Confirmar 27 tribunais no banco de dados
+- [x] Confirmar procedure listTribunals retorna dados corretos
+- [x] Confirmar helper getAllTribunalConfigs() funciona
+- [ ] ⚠️ Testar em produção após deploy (PENDENTE - usuário deve validar)
+
+## 📝 Próximos Passos Recomendados
+
+1. **Testes Unitários (vitest)**
+   - [ ] Testar procedure config.syncTribunalWithLegalMail
+   - [ ] Testar procedure petition.sendBatch
+   - [ ] Testar função processarProcesso
+   - [ ] Testar mapeamento de campos em Configuracoes.tsx
+
+2. **Melhorias de Robustez**
+   - [ ] Implementar retry automático com backoff exponencial (3 tentativas)
+   - [ ] Adicionar timeout dinâmico proporcional ao tamanho dos arquivos
+   - [ ] Implementar circuit breaker para API LegalMail
+
+3. **Notificações e Alertas**
+   - [ ] Adicionar notificações por email ao concluir bateladas
+   - [ ] Adicionar badge de notificação no header
+   - [ ] Implementar webhook para eventos críticos
+
+4. **Dashboard Analítico**
+   - [ ] Criar dashboard com gráficos de sucessos/erros
+   - [ ] Adicionar filtros por data, tribunal, status
+   - [ ] Exportar relatórios em PDF/Excel
+
+5. **Documentação**
+   - [ ] Atualizar README com guia de uso completo
+   - [ ] Criar vídeo tutorial de instalação
+   - [ ] Documentar API tRPC completa
