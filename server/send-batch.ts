@@ -1,12 +1,13 @@
 import { sseManager } from "./sse-progress";
 import { legalMailRequest } from "./legalmail-client";
-import { hybridStoragePut, calculateFileHash } from "./hybrid-storage";
+import { hybridStoragePut, calculateFileHash, hybridStorageRead, bufferToBase64 } from "./hybrid-storage";
 import { 
   updateBatelada, 
   createBateladaProcesso, 
   createLogAuditoria,
   getArquivosByBatelada,
-  updateBateladaProcesso
+  updateBateladaProcesso,
+  getArquivosByProcesso
 } from "./db";
 import { parsePdfFileName, groupAndIdentifyMainFiles } from "../shared/pdfParser";
 import type { ParsedFile } from "../shared/pdfParser";
@@ -313,9 +314,48 @@ async function processarProcesso(
     level: "info",
   });
 
-  // TODO: Buscar arquivo do storage e fazer upload
-  // Por enquanto, apenas simular
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  // Buscar todos os arquivos da batelada e filtrar pelo CNJ do processo
+  const todosArquivos = await getArquivosByBatelada(bateladaId);
+  const arquivosDoProcesso = todosArquivos.filter((a: any) => a.numeroCNJ === processo.numeroCNJ);
+  const arquivoPrincipalData = arquivosDoProcesso.find((a: any) => a.isPrincipal);
+  
+  if (!arquivoPrincipalData || !arquivoPrincipalData.s3Key) {
+    throw new Error(`Arquivo principal não encontrado no storage para processo ${processo.numeroCNJ}`);
+  }
+
+  // Ler arquivo do storage híbrido (S3 ou local)
+  const pdfBuffer = await hybridStorageRead(arquivoPrincipalData.s3Key);
+  const pdfBase64 = bufferToBase64(pdfBuffer);
+
+  // Upload do PDF principal via API LegalMail
+  const uploadPdfPayload = {
+    idPeticoes,
+    arquivo: pdfBase64,
+    nomeArquivo: processo.principal.originalName,
+  };
+
+  const uploadPdfResult = await withTimeout(
+    legalMailRequest<any>({
+      method: "POST",
+      endpoint: "/api/v1/petition/file",
+      body: uploadPdfPayload
+    }),
+    TIMEOUT_MS,
+    "Timeout ao fazer upload do PDF principal"
+  );
+
+  await createLogAuditoria({
+    bateladaId,
+    etapa: "upload_pdf_principal",
+    status: "sucesso",
+    mensagem: `PDF principal enviado: ${processo.principal.originalName} (${Math.round(pdfBuffer.length / 1024)} KB)`,
+    requestUrl: "/api/v1/petition/file",
+    requestMethod: "POST",
+    requestPayload: { ...uploadPdfPayload, arquivo: `[Base64: ${Math.round(pdfBuffer.length / 1024)} KB]` },
+    responseStatus: 200,
+    responsePayload: uploadPdfResult,
+    tempoExecucaoMs: Date.now() - stepStart,
+  });
 
   // 4. Upload dos anexos
   for (const anexo of processo.anexos) {
@@ -326,22 +366,102 @@ async function processarProcesso(
       level: "info",
     });
 
-    // TODO: Upload de anexo
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Buscar arquivo anexo do storage
+    const arquivoAnexoData = arquivosDoProcesso.find((a: any) => 
+      a.nomeOriginal === anexo.originalName && !a.isPrincipal
+    );
+
+    if (!arquivoAnexoData || !arquivoAnexoData.s3Key) {
+      sseManager.sendEvent(bateladaId, "log", {
+        type: "log",
+        timestamp: new Date().toLocaleTimeString("pt-BR"),
+        message: `⚠️ Anexo ${anexo.originalName} não encontrado no storage. Pulando...`,
+        level: "warning",
+      });
+      continue;
+    }
+
+    // Ler arquivo do storage híbrido
+    const anexoBuffer = await hybridStorageRead(arquivoAnexoData.s3Key);
+    const anexoBase64 = bufferToBase64(anexoBuffer);
+
+    // Upload do anexo via API LegalMail
+    const uploadAnexoPayload = {
+      idPeticoes,
+      arquivo: anexoBase64,
+      nomeArquivo: anexo.originalName,
+      tipo: null, // TJGO não aceita tipos de anexo
+    };
+
+    const uploadAnexoResult = await withTimeout(
+      legalMailRequest<any>({
+        method: "POST",
+        endpoint: "/api/v1/petition/attachments",
+        body: uploadAnexoPayload
+      }),
+      TIMEOUT_MS,
+      `Timeout ao fazer upload do anexo ${anexo.originalName}`
+    );
+
+    await createLogAuditoria({
+      bateladaId,
+      etapa: "upload_anexo",
+      status: "sucesso",
+      mensagem: `Anexo enviado: ${anexo.originalName} (${Math.round(anexoBuffer.length / 1024)} KB)`,
+      requestUrl: "/api/v1/petition/attachments",
+      requestMethod: "POST",
+      requestPayload: { ...uploadAnexoPayload, arquivo: `[Base64: ${Math.round(anexoBuffer.length / 1024)} KB]` },
+      responseStatus: 200,
+      responsePayload: uploadAnexoResult,
+      tempoExecucaoMs: Date.now() - stepStart,
+    });
   }
 
-  // 5. Protocolar
+  // 5. Buscar tipo de petição padrão do tribunal
+  const { getTribunalConfig } = await import("./db");
+  const tribunalConfig = await getTribunalConfig(processo.codigoTribunal);
+
+  if (!tribunalConfig || !tribunalConfig.tipoPeticaoPadrao) {
+    throw new Error(`Tipo de petição padrão não configurado para tribunal ${processo.codigoTribunal}`);
+  }
+
+  // 6. Protocolar
   sseManager.sendEvent(bateladaId, "log", {
     type: "log",
     timestamp: new Date().toLocaleTimeString("pt-BR"),
-    message: `⚖️ Protocolando petição...`,
+    message: `⚖️ Protocolando petição (tipo: ${tribunalConfig.tipoPeticaoPadrao})...`,
     level: "info",
   });
 
-  // TODO: Buscar tipo de petição padrão do tribunal e protocolar
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  const protocolPayload = {
+    idPeticoes,
+    tipo: tribunalConfig.tipoPeticaoPadrao,
+  };
 
-  // 6. Salvar no banco
+  const protocolResult = await withTimeout(
+    legalMailRequest<any>({
+      method: "POST",
+      endpoint: "/api/v1/petition/protocol",
+      body: protocolPayload
+    }),
+    TIMEOUT_MS,
+    "Timeout ao protocolar petição"
+  );
+
+  await createLogAuditoria({
+    bateladaId,
+    etapa: "protocolar",
+    status: "sucesso",
+    mensagem: `Petição protocolada com sucesso! Protocolo: ${protocolResult.protocolo || 'N/A'}`,
+    requestUrl: "/api/v1/petition/protocol",
+    requestMethod: "POST",
+    requestPayload: protocolPayload,
+    responseStatus: 200,
+    responsePayload: protocolResult,
+    tempoExecucaoMs: Date.now() - stepStart,
+  });
+
+  // 7. Salvar no banco
   await createBateladaProcesso({
     bateladaId,
     numeroCNJ: processo.numeroCNJ,

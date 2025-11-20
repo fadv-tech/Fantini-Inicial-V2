@@ -121,3 +121,44 @@ export function calculateFileHash(data: Buffer | Uint8Array): string {
   const buffer = Buffer.from(data);
   return crypto.createHash('md5').update(buffer).digest('hex');
 }
+
+
+/**
+ * Lê conteúdo de um arquivo do storage híbrido
+ * Retorna Buffer que pode ser convertido para Base64
+ */
+export async function hybridStorageRead(relKey: string): Promise<Buffer> {
+  const normalizedKey = relKey.replace(/^\/+/, '');
+  
+  if (isManusCloud()) {
+    // Em Manus Cloud (S3), precisamos baixar o arquivo via URL
+    console.log('[HybridStorage] Lendo arquivo do S3:', normalizedKey);
+    const { url } = await manusStorageGet(normalizedKey);
+    
+    // Fazer download do arquivo via fetch
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Erro ao baixar arquivo do S3: ${response.statusText}`);
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
+  } else {
+    // Em ambiente local, ler diretamente do filesystem
+    console.log('[HybridStorage] Lendo arquivo local:', normalizedKey);
+    const filePath = path.join(LOCAL_UPLOADS_DIR, normalizedKey);
+    
+    try {
+      return await fs.readFile(filePath);
+    } catch (error) {
+      throw new Error(`Erro ao ler arquivo local ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+}
+
+/**
+ * Converte Buffer para Base64
+ */
+export function bufferToBase64(buffer: Buffer): string {
+  return buffer.toString('base64');
+}

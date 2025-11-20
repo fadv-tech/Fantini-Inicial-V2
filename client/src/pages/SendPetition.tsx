@@ -20,6 +20,7 @@ import {
   Loader2
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useRef } from "react";
 import { toast } from "sonner";
 
 interface ParsedFile {
@@ -67,6 +68,10 @@ export default function SendPetition() {
   // Mutations
   const parseFilesMutation = trpc.petition.parseFiles.useMutation();
   const uploadFilesMutation = trpc.petition.uploadFiles.useMutation();
+  const sendBatchMutation = trpc.petition.sendBatch.useMutation();
+
+  // Referência para EventSource
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   // Adicionar log
   const addLog = useCallback((message: string, type: LogEntry["type"] = "info") => {
@@ -178,9 +183,74 @@ export default function SendPetition() {
       setBatchId(result.bateladaId);
       addLog(`✅ Batelada #${result.bateladaId} criada com sucesso`, "success");
 
-      // TODO: Conectar SSE para progresso em tempo real
-      // Por enquanto, simular progresso
-      simulateProgress(result.totalProcessos);
+      // Iniciar processamento em background
+      await sendBatchMutation.mutateAsync({
+        bateladaId: result.bateladaId,
+        certificadoId: parseInt(selectedCertificate),
+      });
+
+      // Conectar ao SSE para receber progresso em tempo real
+      const eventSource = new EventSource(`/api/sse/progress/${result.bateladaId}`);
+      eventSourceRef.current = eventSource;
+
+      eventSource.addEventListener("log", (event) => {
+        const data = JSON.parse(event.data);
+        addLog(data.message, data.level || "info");
+      });
+
+      eventSource.addEventListener("progress", (event) => {
+        const data = JSON.parse(event.data);
+        const percentage = (data.current / data.total) * 100;
+        setProgress(percentage);
+        setCurrentProcess(data.currentProcess || "");
+        setSummary({
+          success: data.successCount || 0,
+          error: data.errorCount || 0,
+          warning: data.warningCount || 0,
+        });
+      });
+
+      eventSource.addEventListener("complete", (event) => {
+        const data = JSON.parse(event.data);
+        setIsProcessing(false);
+        setSummary({
+          success: data.successCount || 0,
+          error: data.errorCount || 0,
+          warning: data.warningCount || 0,
+        });
+        setShowSummary(true);
+        addLog("✅ Batelada concluída!", "success");
+        toast.success(`Batelada concluída! ${data.successCount} sucessos, ${data.errorCount} erros`);
+        eventSource.close();
+      });
+
+      eventSource.addEventListener("error", (event: any) => {
+        try {
+          const data = JSON.parse(event.data);
+          setIsProcessing(false);
+          addLog(`❌ Erro: ${data.message}`, "error");
+          toast.error(`Erro: ${data.message}`);
+        } catch (e) {
+          console.error("Erro ao parsear evento de erro", e);
+        }
+        eventSource.close();
+      });
+
+      eventSource.addEventListener("stopped", (event) => {
+        const data = JSON.parse(event.data);
+        setIsProcessing(false);
+        addLog(`⏸️ ${data.message}`, "warning");
+        toast.warning(data.message);
+        eventSource.close();
+      });
+
+      eventSource.onerror = () => {
+        console.error("SSE connection error");
+        setIsProcessing(false);
+        addLog("❌ Erro de conexão com o servidor", "error");
+        toast.error("Erro de conexão com o servidor");
+        eventSource.close();
+      };
 
     } catch (error) {
       const message = error instanceof Error ? error.message : "Erro ao protocolar";
@@ -190,31 +260,29 @@ export default function SendPetition() {
     }
   };
 
-  // Simular progresso (será substituído por SSE)
-  const simulateProgress = (total: number) => {
-    let current = 0;
-    const interval = setInterval(() => {
-      current++;
-      setProgress((current / total) * 100);
-      setCurrentProcess(`Processo ${current}/${total}`);
-      addLog(`📄 Protocolando processo ${current}/${total}...`, "info");
 
-      if (current >= total) {
-        clearInterval(interval);
-        setIsProcessing(false);
-        setSummary({ success: total - 2, error: 2, warning: 1 });
-        setShowSummary(true);
-        addLog("✅ Batelada concluída!", "success");
-      }
-    }, 1000);
-  };
 
   // Parar processamento
-  const handleParar = () => {
-    // TODO: Implementar parada via SSE
-    setIsProcessing(false);
-    addLog("⏸️ Processamento interrompido pelo usuário", "warning");
-    toast.warning("Processamento interrompido");
+  const handleParar = async () => {
+    if (!batchId) return;
+
+    try {
+      // Enviar sinal de parada via fetch
+      await fetch(`/api/sse/stop/${batchId}`, { method: "POST" });
+      
+      // Fechar conexão SSE
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+
+      setIsProcessing(false);
+      addLog("⏸️ Processamento interrompido pelo usuário", "warning");
+      toast.warning("Processamento interrompido");
+    } catch (error) {
+      console.error("Erro ao parar processamento:", error);
+      toast.error("Erro ao parar processamento");
+    }
   };
 
   // Limpar

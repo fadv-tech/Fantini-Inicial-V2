@@ -230,3 +230,50 @@
 - [ ] LOG completo colapsável
 - [ ] JSONs de request/response expandíveis
 - [ ] Busca por CNJ
+
+
+## 🚀 Fase 16: Completar Implementação de processarProcesso (NOVA)
+
+- [x] Buscar arquivos do storage híbrido (S3 ou local)
+- [x] Converter arquivos para Base64
+- [x] Upload real de PDF principal via API LegalMail
+- [x] Upload real de anexos via API LegalMail
+- [x] Buscar tipo de petição padrão do tribunal (tribunal_configs)
+- [x] Protocolar petição via API LegalMail
+- [x] Implementar função hybridStorageRead() no hybrid-storage.ts
+- [x] Implementar função bufferToBase64() no hybrid-storage.ts
+- [ ] Testar em ambiente local (filesystem)
+- [ ] Testar em ambiente Manus Cloud (S3)
+
+## 🔄 Fase 17: Integração SSE no Frontend (NOVA)
+
+- [x] Conectar SendPetition.tsx ao endpoint `/api/sse/progress/:bateladaId`
+- [x] Atualizar barra de progresso em tempo real
+- [x] Atualizar box de LOG em tempo real
+- [x] Implementar botão "Parar" funcional
+- [x] Exibir toast ao concluir
+- [x] Adicionar mutation sendBatch
+- [x] Implementar EventSource com listeners para todos os eventos (log, progress, complete, error, stopped)
+- [x] Implementar handleParar com fetch para /api/sse/stop/:bateladaId
+- [ ] Adicionar badge de notificação no header
+
+## ⚙️ Fase 18: Página de Configurações (NOVA)
+
+- [ ] Criar página Configuracoes.tsx
+- [ ] Tabela com todos os 27 tribunais
+- [ ] Células editáveis inline (dropdowns)
+- [ ] Botão "Sincronizar com LegalMail"
+- [ ] Botão "Aplicar para Todos"
+- [ ] Salvar alterações via trpc.config.updateTribunal
+
+## 📊 Fase 19: Página de Auditoria/LOG (NOVA)
+
+- [ ] Criar página Auditoria.tsx
+- [ ] Listar todas as bateladas
+- [ ] Filtros (data, tribunal, status)
+- [ ] Card expandível para cada batelada
+- [ ] Resumo (sucessos, erros, avisos)
+- [ ] LOG completo colapsável
+- [ ] JSONs de request/response expandíveis
+- [ ] Busca por CNJ
+- [ ] Exportação em CSV e JSON
