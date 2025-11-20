@@ -281,6 +281,14 @@
 
 ---
 
+## 📚 Documentação Adicionada (Commit fbd6357):
+
+- [x] LOGGING-DETALHADO.md - Documentação técnica completa
+- [x] LOGGING-RESUMO.md - Resumo visual e prático
+- [x] Commit realizado com git
+
+---
+
 ## ✅ RESUMO FINAL - SISTEMA COMPLETO
 
 ### Páginas Implementadas:
@@ -320,11 +328,99 @@
 - [x] Compatibilidade Ubuntu Local + Manus Cloud
 
 ### Próximos Passos Recomendados:
+
+**IMEDIATOS (Próximas 2-3 horas):**
+- [ ] Executar `pnpm db:push` para criar tabelas no banco de dados
+- [ ] Testar fluxo completo em ambiente local (upload PDF, protocolar, ver logs)
+- [ ] Validar compatibilidade com S3 (Manus Cloud)
 - [ ] Criar testes unitários (vitest) para procedures críticas
+
+**CURTO PRAZO (Próxima semana):**
 - [ ] Implementar retry automático com backoff exponencial
 - [ ] Adicionar notificações por email ao concluir bateladas
 - [ ] Criar dashboard analítico com gráficos de sucessos/erros
 - [ ] Implementar reprocessamento de erros com um clique
+
+**MÉDIO PRAZO (Próximas 2 semanas):**
 - [ ] Adicionar validação de CNJ antes de protocolar
-- [ ] Implementar suporte a petições iniciais
-- [ ] Criar sistema de permissões (admin, user)
+- [ ] Implementar suporte a petições iniciais (além de intermediárias)
+- [ ] Criar sistema de permissões (admin, user, auditor)
+- [ ] Implementar backup automático de logs
+
+**LONGO PRAZO (Próximo mês):**
+- [ ] Integração com webhooks para notificações em tempo real
+- [ ] Dashboard de analytics com métricas de desempenho
+- [ ] Sistema de templates para petições
+- [ ] Integração com sistemas de gestão de processos
+
+
+---
+
+## 🔧 Fase 22: Melhorias Arquiteturais (NOVA - Em Andamento)
+
+### Decisões Tomadas:
+
+**3️⃣ Upload de Arquivos:**
+- [x] Decisão: Criar endpoint `/api/upload` com FormData direto
+- [ ] Implementar endpoint POST /api/upload com multipart/form-data
+- [ ] Atualizar frontend para usar endpoint direto (sem Base64)
+- [ ] Manter tRPC para metadados, FormData para arquivos binários
+
+**4️⃣ Logs de Auditoria:**
+- [x] Decisão: NÃO salvar arquivo no banco, salvar em pasta permanente
+- [ ] Criar pasta de arquivamento permanente (ex: /arquivos-eternos/)
+- [ ] Salvar TODOS os PDFs que circularam no sistema
+- [ ] Organizar por data: /arquivos-eternos/2024/11/20/CNJ-xxx.pdf
+- [ ] No banco: salvar apenas referência (caminho do arquivo)
+- [ ] Truncar payload Base64 nos logs: "[TRUNCADO - X MB]"
+
+**5️⃣ Retry Automático:**
+- [x] Decisão: NÃO implementar retry (risco de duplicidade)
+- [ ] Preparar infraestrutura para verificação automática
+- [ ] Criar função para verificar petição no LegalMail (GET /api/v1/petition/...)
+- [ ] Preparar estrutura para robô que verifica no site do Tribunal
+- [ ] Implementar endpoint para reprocessar processos com erro (manual)
+- [ ] Melhorar logs para facilitar auditoria e identificação de falhas
+
+### Tarefas de Implementação:
+
+**Timeout Dinâmico:**
+- [x] Criar função calcularTimeout(tamanhoBytes) em send-batch.ts
+- [x] Definir timeouts por etapa (BUSCAR=30s, CRIAR=30s, PROTOCOLAR=90s)
+- [x] Aplicar timeout dinâmico em uploads (30s base + 10s/MB, max 5min)
+- [x] Implementado em send-batch.ts: calcularTimeoutUpload()
+- [x] Aplicado em upload PDF principal e anexos
+- [ ] Testar com arquivos de diferentes tamanhos (1MB, 5MB, 10MB, 20MB)
+
+**Endpoint FormData:**
+- [x] Criar server/routes/upload.ts com endpoint POST /api/upload
+- [x] Implementar multipart/form-data parsing com multer
+- [x] Instalar multer e @types/multer
+- [x] Registrar rota em server/_core/index.ts
+- [x] Suporte a múltiplos arquivos (até 100)
+- [x] Limite de 50MB por arquivo
+- [x] Validação de tipo (apenas PDF)
+- [x] Parse automático de CNJ, codProc, codPet
+- [x] Salvar em storage híbrido (S3/filesystem)
+- [x] Retornar metadados completos (s3Key, s3Url, hash, etc)
+- [ ] Atualizar SendPetition.tsx para usar fetch direto
+- [ ] Testar upload de arquivos grandes (20MB+)
+
+**Arquivamento Permanente:**
+- [ ] Criar função arquivarPDF(buffer, cnj, tipo) em server/arquivo-permanente.ts
+- [ ] Estrutura: /arquivos-eternos/{ano}/{mes}/{dia}/{cnj}-{tipo}-{timestamp}.pdf
+- [ ] Adicionar campo arquivoPermanentePath em arquivos_enviados
+- [ ] Implementar cleanup de arquivos temporários (S3/local após arquivar)
+
+**Verificação Automática:**
+- [ ] Criar server/verificacao-peticao.ts
+- [ ] Função verificarPeticaoLegalMail(idPeticoes) - consulta API
+- [ ] Preparar estrutura para robô (Puppeteer/Playwright)
+- [ ] Criar tabela verificacoes_peticao (id, bateladaId, status, dataVerificacao)
+- [ ] Endpoint para triggerar verificação manual
+
+**Reprocessamento Manual:**
+- [ ] Criar procedure tRPC reprocessarProcesso(bateladaProcessoId)
+- [ ] Buscar arquivos da pasta permanente
+- [ ] Reprocessar apenas processos com status "erro"
+- [ ] Registrar tentativa de reprocessamento em logs_auditoria

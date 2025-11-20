@@ -12,7 +12,34 @@ import {
 import { parsePdfFileName, groupAndIdentifyMainFiles } from "../shared/pdfParser";
 import type { ParsedFile } from "../shared/pdfParser";
 
-const TIMEOUT_MS = 60000; // 60 segundos
+// Timeouts por etapa (em ms)
+const TIMEOUTS = {
+  BUSCAR_PROCESSO: 30000,      // 30s - rápido, só busca no banco
+  CRIAR_PETICAO: 30000,         // 30s - rápido, só cria registro
+  PROTOCOLAR: 90000,            // 90s - lento, assina digitalmente
+};
+
+/**
+ * Calcula timeout dinâmico baseado no tamanho do arquivo
+ * Fórmula: 30s base + 10s por MB (máximo 5 minutos)
+ * 
+ * Exemplos:
+ * - 1MB: 30s + (1 * 10s) = 40s
+ * - 5MB: 30s + (5 * 10s) = 80s
+ * - 10MB: 30s + (10 * 10s) = 130s
+ * - 20MB: 30s + (20 * 10s) = 230s
+ * - 30MB+: limitado a 300s (5min)
+ */
+function calcularTimeoutUpload(tamanhoBytes: number): number {
+  const BASE_TIMEOUT = 30000; // 30s
+  const TIMEOUT_POR_MB = 10000; // 10s por MB
+  const MAX_TIMEOUT = 300000; // 5 minutos
+  
+  const tamanhoMB = tamanhoBytes / (1024 * 1024);
+  const timeout = BASE_TIMEOUT + (tamanhoMB * TIMEOUT_POR_MB);
+  
+  return Math.min(timeout, MAX_TIMEOUT);
+}
 
 // Usar ProcessGroup do pdfParser
 import type { ProcessGroup } from "../shared/pdfParser";
@@ -242,7 +269,7 @@ async function processarProcesso(
       endpoint: "/api/v1/process",
       params: { cnj: processo.numeroCNJ }
     }),
-    TIMEOUT_MS,
+    TIMEOUTS.BUSCAR_PROCESSO, // 30s
     `Timeout ao buscar processo ${processo.numeroCNJ}`
   );
 
@@ -283,7 +310,7 @@ async function processarProcesso(
       endpoint: "/api/v1/petition/intermediate",
       body: createPetitionPayload
     }),
-    TIMEOUT_MS,
+    TIMEOUTS.CRIAR_PETICAO, // 30s
     "Timeout ao criar petição"
   );
 
@@ -334,14 +361,17 @@ async function processarProcesso(
     nomeArquivo: processo.principal.originalName,
   };
 
+  // Timeout dinâmico baseado no tamanho do arquivo
+  const timeoutUploadPdf = calcularTimeoutUpload(pdfBuffer.length);
+  
   const uploadPdfResult = await withTimeout(
     legalMailRequest<any>({
       method: "POST",
       endpoint: "/api/v1/petition/file",
       body: uploadPdfPayload
     }),
-    TIMEOUT_MS,
-    "Timeout ao fazer upload do PDF principal"
+    timeoutUploadPdf, // Dinâmico: 30s base + 10s/MB
+    `Timeout ao fazer upload do PDF principal (${Math.round(pdfBuffer.length / (1024 * 1024))}MB, timeout ${timeoutUploadPdf}ms)`
   );
 
   await createLogAuditoria({
@@ -393,14 +423,17 @@ async function processarProcesso(
       tipo: null, // TJGO não aceita tipos de anexo
     };
 
+    // Timeout dinâmico baseado no tamanho do anexo
+    const timeoutUploadAnexo = calcularTimeoutUpload(anexoBuffer.length);
+    
     const uploadAnexoResult = await withTimeout(
       legalMailRequest<any>({
         method: "POST",
         endpoint: "/api/v1/petition/attachments",
         body: uploadAnexoPayload
       }),
-      TIMEOUT_MS,
-      `Timeout ao fazer upload do anexo ${anexo.originalName}`
+      timeoutUploadAnexo, // Dinâmico: 30s base + 10s/MB
+      `Timeout ao fazer upload do anexo ${anexo.originalName} (${Math.round(anexoBuffer.length / (1024 * 1024))}MB, timeout ${timeoutUploadAnexo}ms)`
     );
 
     await createLogAuditoria({
@@ -444,7 +477,7 @@ async function processarProcesso(
       endpoint: "/api/v1/petition/protocol",
       body: protocolPayload
     }),
-    TIMEOUT_MS,
+    TIMEOUTS.PROTOCOLAR, // 90s
     "Timeout ao protocolar petição"
   );
 

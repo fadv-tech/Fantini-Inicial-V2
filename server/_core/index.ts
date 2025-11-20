@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { handleSSE, handleStop } from "../sse-progress";
 import { serveStatic, setupVite } from "./vite";
+import uploadRouter from "../routes/upload";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -40,6 +41,9 @@ async function startServer() {
   // SSE endpoints for real-time progress
   app.get("/api/sse/progress", handleSSE);
   app.post("/api/sse/stop", handleStop);
+  
+  // Upload endpoint with FormData (multipart/form-data)
+  app.use("/api", uploadRouter);
   
   // tRPC API
   app.use(
