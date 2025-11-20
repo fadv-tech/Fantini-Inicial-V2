@@ -15,8 +15,10 @@ import {
   XCircle,
   AlertTriangle,
   Clock,
-  Loader2
+  Loader2,
+  RefreshCw
 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -39,12 +41,22 @@ export default function Auditoria() {
   const [searchCNJ, setSearchCNJ] = useState("");
   const [selectedBatch, setSelectedBatch] = useState<number | null>(null);
   const [expandedBatches, setExpandedBatches] = useState<Set<number>>(new Set());
+  const [verificationDialogOpen, setVerificationDialogOpen] = useState(false);
+  const [verificationResults, setVerificationResults] = useState<any[]>([]);
+  const [verifyingBatchId, setVerifyingBatchId] = useState<number | null>(null);
 
   // Queries
   const { data: batches, isLoading: loadingBatches } = trpc.petition.listBatches.useQuery();
   const { data: batchDetails, isLoading: loadingDetails } = trpc.petition.getBatchDetails.useQuery(
     { bateladaId: selectedBatch! },
     { enabled: !!selectedBatch }
+  );
+
+  // Query para verificar petições (manual)
+  const [idsParaVerificar, setIdsParaVerificar] = useState<number[]>([]);
+  const { data: verificacaoData, isLoading: isVerifying, refetch: refetchVerificacao } = trpc.petition.verificarPeticoesLote.useQuery(
+    { idPeticoes: idsParaVerificar },
+    { enabled: false } // Não executar automaticamente
   );
 
   // Filtrar bateladas por CNJ (simplificado - buscar na descrição)
@@ -65,6 +77,54 @@ export default function Auditoria() {
       return newSet;
     });
     setSelectedBatch(batchId);
+  };
+
+  // Verificar status das petições via API LegalMail
+  const handleVerificarStatus = async (batchId: number) => {
+    try {
+      setVerifyingBatchId(batchId);
+      
+      // Buscar detalhes da batelada para obter IDs das petições
+      const batch = batches?.find((b: any) => b.id === batchId);
+      if (!batch) {
+        toast.error("Batelada não encontrada");
+        return;
+      }
+      
+      // Buscar processos da batelada
+      const response = await fetch(`/api/trpc/petition.getBatchDetails?input=${encodeURIComponent(JSON.stringify({ bateladaId: batchId }))}`);
+      const data = await response.json();
+      
+      if (!data.result?.data?.processos || data.result.data.processos.length === 0) {
+        toast.error("Nenhum processo encontrado nesta batelada");
+        return;
+      }
+      
+      // Extrair IDs das petições (idpeticoes)
+      const idsPeticoes = data.result.data.processos
+        .map((p: any) => p.idpeticoes)
+        .filter((id: any) => id != null);
+      
+      if (idsPeticoes.length === 0) {
+        toast.error("Nenhuma petição foi criada ainda nesta batelada");
+        return;
+      }
+      
+      // Atualizar IDs e triggerar verificação
+      setIdsParaVerificar(idsPeticoes);
+      const result = await refetchVerificacao();
+      
+      if (result.data) {
+        setVerificationResults(result.data);
+        setVerificationDialogOpen(true);
+        toast.success(`Verificação concluída: ${idsPeticoes.length} petições verificadas`);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar status:", error);
+      toast.error("Erro ao verificar status das petições");
+    } finally {
+      setVerifyingBatchId(null);
+    }
   };
 
   // Exportar LOG em JSON
@@ -112,6 +172,54 @@ export default function Auditoria() {
     link.click();
     URL.revokeObjectURL(url);
     toast.success("LOG exportado em CSV");
+  };
+
+  // Renderizar badge de status de verificação
+  const renderVerificationBadge = (status: string) => {
+    switch (status) {
+      case "protocolada":
+        return (
+          <Badge variant="default" className="gap-1 bg-green-600">
+            <CheckCircle2 className="h-3 w-3" />
+            Protocolada
+          </Badge>
+        );
+      case "enviada":
+        return (
+          <Badge variant="default" className="gap-1 bg-blue-600">
+            <CheckCircle2 className="h-3 w-3" />
+            Enviada
+          </Badge>
+        );
+      case "pendente":
+        return (
+          <Badge variant="secondary" className="gap-1">
+            <Clock className="h-3 w-3" />
+            Pendente
+          </Badge>
+        );
+      case "rejeitada":
+        return (
+          <Badge variant="destructive" className="gap-1">
+            <XCircle className="h-3 w-3" />
+            Rejeitada
+          </Badge>
+        );
+      case "erro":
+        return (
+          <Badge variant="destructive" className="gap-1">
+            <AlertTriangle className="h-3 w-3" />
+            Erro
+          </Badge>
+        );
+      default:
+        return (
+          <Badge variant="outline" className="gap-1">
+            <AlertTriangle className="h-3 w-3" />
+            Desconhecido
+          </Badge>
+        );
+    }
   };
 
   // Renderizar badge de status
@@ -245,6 +353,22 @@ export default function Auditoria() {
                         variant="outline"
                         onClick={(e) => {
                           e.stopPropagation();
+                          handleVerificarStatus(batch.id);
+                        }}
+                        disabled={isVerifying}
+                      >
+                        {isVerifying && verifyingBatchId === batch.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-4 w-4" />
+                        )}
+                        Verificar Status
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleExportJSON(batch.id);
                         }}
                       >
@@ -355,6 +479,53 @@ export default function Auditoria() {
           </Card>
         )}
       </div>
+
+      {/* Dialog de Verificação */}
+      <Dialog open={verificationDialogOpen} onOpenChange={setVerificationDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Resultados da Verificação</DialogTitle>
+            <DialogDescription>
+              Status das petições consultadas via API LegalMail
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            {verificationResults.length > 0 ? (
+              verificationResults.map((result: any, idx: number) => (
+                <Card key={idx}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-semibold">Petição #{result.idPeticoes}</span>
+                          {renderVerificationBadge(result.status)}
+                        </div>
+                        {result.numeroProtocolo && (
+                          <p className="text-sm text-muted-foreground">
+                            <span className="font-medium">Protocolo:</span> {result.numeroProtocolo}
+                          </p>
+                        )}
+                        {result.dataProtocolo && (
+                          <p className="text-sm text-muted-foreground">
+                            <span className="font-medium">Data:</span> {new Date(result.dataProtocolo).toLocaleString("pt-BR")}
+                          </p>
+                        )}
+                        {result.mensagemErro && (
+                          <p className="text-sm text-red-600 mt-2">
+                            <span className="font-medium">Erro:</span> {result.mensagemErro}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p className="text-center text-muted-foreground">Nenhum resultado disponível</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

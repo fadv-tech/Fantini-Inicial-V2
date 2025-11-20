@@ -469,3 +469,35 @@
 - [x] Integrar resultado do upload FormData com uploadFilesMutation
 - [ ] Testar upload de arquivos grandes (20MB+)
 - [ ] Adicionar progresso de upload (fetch com onProgress)
+
+
+---
+
+## 🎯 Fase 24: Executar Próximos 3 Passos (NOVA - Em Andamento)
+
+### 1️⃣ Executar pnpm db:push:
+- [x] Criar script SQL create-tables.sql com todas as 6 tabelas
+- [x] Executar script SQL via mysql CLI
+- [x] Verificar criação das tabelas (SHOW TABLES - 16 tabelas)
+- [x] Verificar estrutura de arquivos_enviados (DESCRIBE - 15 colunas)
+- [x] Confirmar colunas arquivoPermanentePath e arquivoPermanenteUrl criadas
+
+### 2️⃣ Testar Fluxo Completo:
+- [ ] Criar PDFs de teste com nomes válidos (CNJ)
+- [ ] Testar upload de arquivos pequenos (< 5MB)
+- [ ] Testar upload de arquivos grandes (> 20MB)
+- [ ] Protocolar batelada de teste
+- [ ] Verificar arquivamento permanente em /home/ubuntu/arquivos-eternos/
+- [ ] Validar logs truncados no banco de dados
+- [ ] Testar SSE em tempo real
+
+### 3️⃣ Implementar Interface de Verificação:
+- [x] Adicionar botão "Verificar Status" na página Auditoria
+- [x] Criar modal/dialog para exibir resultados da verificação
+- [x] Implementar badges coloridos para status (pendente, enviada, protocolada, rejeitada, erro, desconhecido)
+- [x] Integrar com trpc.petition.verificarPeticoesLote
+- [x] Adicionar loading state durante verificação (Loader2 animado)
+- [x] Criar função handleVerificarStatus() para buscar IDs e triggerar verificação
+- [x] Criar função renderVerificationBadge() para badges visuais
+- [x] Exibir numeroProtocolo, dataProtocolo e mensagemErro no dialog
+- [x] Adicionar toast de sucesso/erro após verificação
