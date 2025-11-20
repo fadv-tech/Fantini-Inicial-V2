@@ -2,14 +2,12 @@
 
 /**
  * Script para popular tabela tribunal_configs com os 27 tribunais
- * Uso: node seed-tribunais.mjs
+ * Uso: pnpm seed
  */
 
+import mysql from 'mysql2/promise';
 import { drizzle } from "drizzle-orm/mysql2";
 import { tribunalConfigs } from "./drizzle/schema.ts";
-
-// Conectar ao banco
-const db = drizzle(process.env.DATABASE_URL);
 
 // Lista dos 27 tribunais
 const tribunais = [
@@ -43,8 +41,20 @@ const tribunais = [
 ];
 
 async function seed() {
+  let connection;
+  
   try {
     console.log("🌱 Iniciando seed de tribunais...");
+    
+    // Criar conexão mysql2 a partir da DATABASE_URL
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error("DATABASE_URL não configurada no .env");
+    }
+    
+    // Conectar ao banco
+    connection = await mysql.createConnection(databaseUrl);
+    const db = drizzle(connection);
 
     for (const tribunal of tribunais) {
       await db.insert(tribunalConfigs).values({
@@ -68,8 +78,12 @@ async function seed() {
     console.log("\n✅ 27 tribunais inseridos com sucesso!");
     process.exit(0);
   } catch (error) {
-    console.error("❌ Erro ao popular tribunais:", error);
+    console.error("❌ Erro ao popular tribunais:", error.message);
     process.exit(1);
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 
