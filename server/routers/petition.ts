@@ -29,21 +29,21 @@ import {
  */
 export const listCertificates = protectedProcedure.query(async () => {
   try {
-    const response = await legalMailRequest<{ certificados: any[] }>({
+    const response = await legalMailRequest<any[]>({
       method: "GET",
-      endpoint: "/api/v1/certificate",
+      endpoint: "/api/v1/workspace/certificates",
     });
     
-    if (!response.certificados || !Array.isArray(response.certificados)) {
+    if (!Array.isArray(response)) {
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Resposta inválida da API LegalMail",
       });
     }
     
-    return response.certificados.map((cert: any) => ({
+    return response.map((cert: any) => ({
       id: cert.idcertificados,
-      nome: cert.nome,
+      nome: cert.advogado_nome,
       vencimento: cert.vencimento,
     }));
   } catch (error) {

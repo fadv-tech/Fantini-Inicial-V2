@@ -267,8 +267,8 @@ async function processarProcesso(
   const searchResult = await withTimeout(
     legalMailRequest<any>({
       method: "GET",
-      endpoint: "/api/v1/process",
-      params: { cnj: processo.numeroCNJ }
+      endpoint: "/api/v1/process/detail",
+      params: { numero_processo: processo.numeroCNJ }
     }),
     TIMEOUTS.BUSCAR_PROCESSO, // 30s
     `Timeout ao buscar processo ${processo.numeroCNJ}`
@@ -279,7 +279,7 @@ async function processarProcesso(
     etapa: "buscar_processo",
     status: "sucesso",
     mensagem: `Processo ${processo.numeroCNJ} encontrado`,
-    requestUrl: `/api/v1/process?cnj=${processo.numeroCNJ}`,
+    requestUrl: `/api/v1/process/detail?numero_processo=${processo.numeroCNJ}`,
     requestMethod: "GET",
     responseStatus: 200,
     responsePayload: searchResult,
@@ -496,7 +496,7 @@ async function processarProcesso(
   const protocolResult = await withTimeout(
     legalMailRequest<any>({
       method: "POST",
-      endpoint: "/api/v1/petition/protocol",
+      endpoint: "/api/v1/petition/intermediate/send",
       body: protocolPayload
     }),
     TIMEOUTS.PROTOCOLAR, // 90s
