@@ -7,8 +7,11 @@ Este guia mostra como instalar e rodar o sistema em um **Ubuntu zerado** com Nod
 ## ✅ Pré-requisitos
 
 - Ubuntu 22.04 LTS (ou superior)
+
 - Node.js v20.18.2 (já instalado)
+
 - MySQL 8.0+ ou MariaDB 10.6+
+
 - Git
 
 ---
@@ -33,6 +36,7 @@ sudo mysql_secure_installation
 ```
 
 **Respostas recomendadas:**
+
 ```
 Set root password? Y
 New password: sua_senha_aqui
@@ -65,16 +69,16 @@ EXIT;
 ```bash
 # Clonar do GitHub
 cd ~
-git clone https://github.com/fadv-tech/legalmail-peticionamento.git
-cd legalmail-peticionamento
+git clone https://github.com/fadv-tech/Fantini-Inicial-V2.git
+cd Fantini-Inicial-V2
 
-# Verificar versão correta
-git checkout f5fa72e3
+# Verificar versão correta (commit mais recente)
+git checkout 17a7af45
 ```
 
 ---
 
-### 4️⃣ Instalar pnpm (se não tiver)
+### 4️⃣ Instalar pnpm (se não tiver )
 
 ```bash
 # Instalar pnpm globalmente
@@ -89,7 +93,7 @@ pnpm --version
 ### 5️⃣ Instalar Dependências do Projeto
 
 ```bash
-cd ~/legalmail-peticionamento
+cd ~/Fantini-Inicial-V2
 pnpm install
 ```
 
@@ -106,7 +110,7 @@ nano .env
 
 **Cole o seguinte conteúdo** (ajuste os valores):
 
-```env
+```
 # Database (MySQL Local)
 DATABASE_URL=mysql://legalmail:senha_segura_aqui@localhost:3306/legalmail_peticionamento
 
@@ -127,7 +131,7 @@ OWNER_NAME=Seu Nome
 VITE_APP_TITLE=Sistema de Peticionamento LegalMail
 VITE_APP_LOGO=/logo.svg
 
-# Storage Local (não usar S3)
+# Storage Local (não usar S3 )
 # Deixe vazio para usar filesystem local
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
@@ -152,7 +156,7 @@ VITE_ANALYTICS_WEBSITE_ID=
 ### 7️⃣ Criar Tabelas no Banco
 
 ```bash
-cd ~/legalmail-peticionamento
+cd ~/Fantini-Inicial-V2
 
 # Executar script SQL
 mysql -u legalmail -p legalmail_peticionamento < create-tables.sql
@@ -161,11 +165,13 @@ mysql -u legalmail -p legalmail_peticionamento < create-tables.sql
 **Digite a senha:** `senha_segura_aqui`
 
 **Verificar tabelas criadas:**
+
 ```bash
 mysql -u legalmail -p legalmail_peticionamento -e "SHOW TABLES;"
 ```
 
 **Resultado esperado:**
+
 ```
 +--------------------------------------+
 | Tables_in_legalmail_peticionamento   |
@@ -184,11 +190,12 @@ mysql -u legalmail -p legalmail_peticionamento -e "SHOW TABLES;"
 ### 8️⃣ Popular Tribunais (Seed)
 
 ```bash
-cd ~/legalmail-peticionamento
+cd ~/Fantini-Inicial-V2
 node seed-tribunais.mjs
 ```
 
 **Resultado esperado:**
+
 ```
 ✅ 27 tribunais inseridos com sucesso!
 ```
@@ -206,6 +213,7 @@ chmod 755 ~/arquivos-eternos
 ```
 
 **Estrutura que será criada automaticamente:**
+
 ```
 ~/arquivos-eternos/
   └─ 2024/
@@ -221,22 +229,24 @@ chmod 755 ~/arquivos-eternos
 ### 🔟 Iniciar Servidor de Desenvolvimento
 
 ```bash
-cd ~/legalmail-peticionamento
+cd ~/Fantini-Inicial-V2
 pnpm dev
 ```
 
 **Resultado esperado:**
+
 ```
 > legalmail-peticionamento@1.0.0 dev
 > concurrently "pnpm dev:server" "pnpm dev:client"
 
-[server] Server running on http://localhost:3000/
-[client] VITE v5.x.x ready in 1234 ms
-[client] ➜  Local:   http://localhost:5173/
-[client] ➜  Network: use --host to expose
+[server]: http://localhost:3000/ "Server running on"
+[client]: # "VITE v5.x.x ready in 1234 ms"
+[client]: http://localhost:5173/ "➜  Local:"
+[client]: # "➜  Network: use --host to expose"
 ```
 
 **Acessar no navegador:**
+
 ```
 http://localhost:3000
 ```
@@ -250,11 +260,11 @@ Siga o mesmo fluxo do **GUIA-TESTE-MANUS-CLOUD.md**, mas com estas diferenças:
 ### Diferenças Ubuntu Local vs Manus Cloud:
 
 | Aspecto | Manus Cloud | Ubuntu Local |
-|---------|-------------|--------------|
-| **Storage** | S3 (AWS) | Filesystem (`~/arquivos-eternos/`) |
+| --- | --- | --- |
+| **Storage** | S3 (AWS ) | Filesystem (`~/arquivos-eternos/`) |
 | **Banco** | TiDB (cloud) | MySQL (local) |
-| **URL** | https://3000-xxx.manusvm.computer | http://localhost:3000 |
-| **OAuth** | Manus OAuth | Opcional (pode desabilitar) |
+| **URL** | [https://3000-xxx.manusvm.computer](https://3000-xxx.manusvm.computer) | [http://localhost:3000](http://localhost:3000) |
+| **OAuth** | Manus OAuth | Opcional (pode desabilitar ) |
 
 ---
 
@@ -269,6 +279,7 @@ evince ~/arquivos-eternos/2024/11/20/CNJ-0123456-78.2024.8.09.0051-PETICAO-INICI
 ```
 
 **Resultado esperado:**
+
 ```
 -rw-r--r-- 1 user user 3.2M Nov 20 23:00 CNJ-0123456-78.2024.8.09.0051-PETICAO-INICIAL-20241120-230015.pdf
 -rw-r--r-- 1 user user 1.5M Nov 20 23:00 CNJ-0123456-78.2024.8.09.0051-ANEXO-1-20241120-230016.pdf
@@ -299,6 +310,7 @@ LIMIT 10;
 ## 🐛 Troubleshooting
 
 ### Erro: "Cannot connect to MySQL"
+
 ```bash
 # Verificar se MySQL está rodando
 sudo systemctl status mysql
@@ -311,6 +323,7 @@ mysql -u legalmail -p -e "SELECT 1;"
 ```
 
 ### Erro: "Permission denied" ao criar pasta
+
 ```bash
 # Dar permissões corretas
 sudo chown -R $USER:$USER ~/arquivos-eternos
@@ -318,6 +331,7 @@ chmod -R 755 ~/arquivos-eternos
 ```
 
 ### Erro: "Port 3000 already in use"
+
 ```bash
 # Matar processo na porta 3000
 sudo lsof -ti:3000 | xargs kill -9
@@ -327,6 +341,7 @@ PORT=3001 pnpm dev
 ```
 
 ### Erro: "pnpm: command not found"
+
 ```bash
 # Instalar pnpm
 npm install -g pnpm
@@ -365,16 +380,19 @@ mysql -u legalmail -p legalmail_peticionamento < backup_20241120.sql
 ## 📊 Monitoramento
 
 ### Ver processos Node rodando
+
 ```bash
 ps aux | grep node
 ```
 
 ### Ver uso de disco (arquivos eternos)
+
 ```bash
 du -sh ~/arquivos-eternos/
 ```
 
 ### Ver tamanho do banco
+
 ```bash
 mysql -u legalmail -p legalmail_peticionamento -e "
 SELECT 
@@ -401,6 +419,7 @@ pnpm start
 ```
 
 **Usar PM2 para manter rodando:**
+
 ```bash
 # Instalar PM2
 npm install -g pm2
@@ -428,7 +447,12 @@ pm2 stop legalmail
 Se todos os passos funcionaram, o sistema está **100% operacional** no Ubuntu local! 🎉
 
 **Próximos passos:**
+
 - Configurar HTTPS com Let's Encrypt (produção)
+
 - Configurar backup automático do banco
+
 - Configurar monitoramento com Grafana/Prometheus
+
 - Configurar CI/CD com GitHub Actions
+

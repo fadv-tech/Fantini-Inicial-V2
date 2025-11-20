@@ -233,8 +233,8 @@ sudo apt-get install -y nodejs
 npm install -g pnpm
 
 # 3. Clonar repositório
-git clone https://github.com/fadv-tech/legalmail-peticionamento.git
-cd legalmail-peticionamento
+git clone https://github.com/fadv-tech/Fantini-Inicial-V2.git
+cd Fantini-Inicial-V2
 
 # 4. Instalar dependências
 pnpm install

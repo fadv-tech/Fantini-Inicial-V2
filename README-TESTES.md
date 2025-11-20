@@ -174,7 +174,7 @@ sudo apt install imagemagick
 - **Documentação técnica:** [REVISAO-SISTEMA.md](./REVISAO-SISTEMA.md)
 - **Compatibilidade:** [COMPATIBILIDADE.md](./COMPATIBILIDADE.md)
 - **Logging:** [LOGGING-DETALHADO.md](./LOGGING-DETALHADO.md)
-- **GitHub:** https://github.com/fadv-tech/legalmail-peticionamento
+- **GitHub:** https://github.com/fadv-tech/Fantini-Inicial-V2
 
 ---
 
