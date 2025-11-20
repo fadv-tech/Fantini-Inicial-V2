@@ -191,7 +191,13 @@ mysql -u legalmail -p legalmail_peticionamento -e "SHOW TABLES;"
 
 ```bash
 cd ~/Fantini-Inicial-V2
-node seed-tribunais.mjs
+pnpm seed
+```
+
+**Ou diretamente com tsx:**
+```bash
+cd ~/Fantini-Inicial-V2
+npx tsx seed-tribunais.mjs
 ```
 
 **Resultado esperado:**

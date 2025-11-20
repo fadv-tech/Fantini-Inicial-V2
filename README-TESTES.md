@@ -42,7 +42,12 @@ Use este guia se você quer instalar o sistema em um Ubuntu zerado com Node v20.
 Popula a tabela `tribunal_configs` com os 27 tribunais brasileiros.
 
 ```bash
-node seed-tribunais.mjs
+pnpm seed
+```
+
+**Ou diretamente com tsx:**
+```bash
+npx tsx seed-tribunais.mjs
 ```
 
 **Saída esperada:**
@@ -106,7 +111,7 @@ mysql -u legalmail -p legalmail_peticionamento < create-tables.sql
 
 ### Para Manus Cloud:
 1. Ler [GUIA-TESTE-MANUS-CLOUD.md](./GUIA-TESTE-MANUS-CLOUD.md)
-2. Executar `node seed-tribunais.mjs`
+2. Executar `pnpm seed`
 3. Executar `bash gerar-pdfs-teste.sh`
 4. Seguir passos do guia (upload, configuração, protocolização)
 5. Verificar arquivamento em S3
@@ -118,7 +123,7 @@ mysql -u legalmail -p legalmail_peticionamento < create-tables.sql
 3. Clonar repositório do GitHub
 4. Configurar `.env`
 5. Executar `create-tables.sql`
-6. Executar `node seed-tribunais.mjs`
+6. Executar `pnpm seed`
 7. Executar `bash gerar-pdfs-teste.sh`
 8. Iniciar servidor com `pnpm dev`
 9. Seguir passos do guia (upload, configuração, protocolização)

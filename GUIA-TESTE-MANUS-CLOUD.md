@@ -21,7 +21,13 @@ Execute o script de seed para criar os 27 tribunais:
 
 ```bash
 cd /home/ubuntu/legalmail-peticionamento
-node seed-tribunais.mjs
+pnpm seed
+```
+
+**Ou diretamente com tsx:**
+```bash
+cd /home/ubuntu/legalmail-peticionamento
+npx tsx seed-tribunais.mjs
 ```
 
 **Resultado esperado:**
