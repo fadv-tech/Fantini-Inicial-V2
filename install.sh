@@ -70,7 +70,8 @@ sudo systemctl enable mysql
 
 # Criar banco e usuário
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS legalmail_peticionamento;"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'legalmail'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+sudo mysql -e "DROP USER IF EXISTS 'legalmail'@'localhost';"
+sudo mysql -e "CREATE USER 'legalmail'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 sudo mysql -e "GRANT ALL PRIVILEGES ON legalmail_peticionamento.* TO 'legalmail'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
