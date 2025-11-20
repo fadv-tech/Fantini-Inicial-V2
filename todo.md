@@ -553,3 +553,42 @@
    - [ ] Atualizar README com guia de uso completo
    - [ ] Criar vídeo tutorial de instalação
    - [ ] Documentar API tRPC completa
+
+
+## 🚨 BUG CRÍTICO IDENTIFICADO - Todos tribunais mostram "Nenhum (TJGO)"
+
+- [ ] Investigar por que todos os tribunais têm tipoAnexoPadrao = "Nenhum (TJGO)"
+- [ ] Verificar por que todos os tribunais têm o MESMO tipoPeticaoPadrao
+- [ ] Verificar dados no banco de dados (tribunal_configs)
+- [ ] Verificar se sincronização está salvando dados corretos
+- [ ] Verificar se há problema no mapeamento do frontend
+- [ ] Corrigir problema identificado
+- [ ] Testar sincronização novamente
+
+
+## 🔄 Fase 26: Sistema de Sincronização de Tribunais com Processo Válido
+
+### Objetivo
+Implementar fluxo onde usuário fornece CNJ de processo válido por tribunal, sistema busca tipos disponíveis e popula dropdowns dinamicamente.
+
+### Tarefas
+- [x] Atualizar schema: adicionar campos `processoSyncCNJ`, `tiposPeticaoDisponiveis` (JSON), `tiposAnexoDisponiveis` (JSON)
+- [x] Criar procedure `config.syncTribunalWithProcess` que:
+  - Busca processo no LegalMail
+  - Cria petiu00e7ão intermediária mock
+  - Busca tipos de petiu00e7ão e anexo
+  - Salva no banco
+- [x] Criar script de teste validado: `scripts-teste/11-sincronizar-tribunal.mjs`
+- [ ] Atualizar interface Configurau00e7ões:
+  - Adicionar campo input CNJ por tribunal
+  - Adicionar botão "Popular" ao lado do input
+  - Desabilitar dropdowns até sincronizar
+  - Popul dropdowns após sincronizau00e7ão
+- [ ] Testar fluxo completo com TJGO e TJMG
+- [ ] Salvar checkpoint final
+
+### Referências
+- Script validado: `scripts-teste/11-sincronizar-tribunal.mjs`
+- Endpoints corretos: `idpeticoes` (minúsculo) para ambos
+- TJGO: 79 tipos petição + 6 tipos anexo
+- TJMG: 38 tipos petição + 0 tipos anexo

@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE tribunal_configs SET tipoPeticaoPadrao = NULL, tipoPeticaoPadraoNome = NULL, tipoAnexoPadrao = NULL, tipoAnexoPadraoNome = NULL, ultimaSincronizacao = NULL WHERE 1=1",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39QSeYhbNv3L4jg.846f4ba715a4 --database 2HAR2cejBwEBj6M7XczVcW --execute UPDATE tribunal_configs SET tipoPeticaoPadrao = NULL, tipoPeticaoPadraoNome = NULL, tipoAnexoPadrao = NULL, tipoAnexoPadraoNome = NULL, ultimaSincronizacao = NULL WHERE 1=1",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 56
+}

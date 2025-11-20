@@ -1,0 +1,90 @@
+{
+  "query": "SELECT codigoTribunal, nomeTribunal, tipoPeticaoPadrao, tipoPeticaoPadraoNome, tipoAnexoPadrao, tipoAnexoPadraoNome FROM tribunal_configs ORDER BY codigoTribunal LIMIT 10",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39QSeYhbNv3L4jg.846f4ba715a4 --database 2HAR2cejBwEBj6M7XczVcW --execute SELECT codigoTribunal, nomeTribunal, tipoPeticaoPadrao, tipoPeticaoPadraoNome, tipoAnexoPadrao, tipoAnexoPadraoNome FROM tribunal_configs ORDER BY codigoTribunal LIMIT 10",
+  "rows": [
+    {
+      "codigoTribunal": "8.01",
+      "nomeTribunal": "TJAC",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.02",
+      "nomeTribunal": "TJAL",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.03",
+      "nomeTribunal": "TJAP",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.04",
+      "nomeTribunal": "TJAM",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.05",
+      "nomeTribunal": "TJBA",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.06",
+      "nomeTribunal": "TJCE",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.07",
+      "nomeTribunal": "TJDF",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.08",
+      "nomeTribunal": "TJES",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.09",
+      "nomeTribunal": "TJGO",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    },
+    {
+      "codigoTribunal": "8.10",
+      "nomeTribunal": "TJMA",
+      "tipoPeticaoPadrao": "NULL",
+      "tipoPeticaoPadraoNome": "NULL",
+      "tipoAnexoPadrao": "NULL",
+      "tipoAnexoPadraoNome": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "codigoTribunal\tnomeTribunal\ttipoPeticaoPadrao\ttipoPeticaoPadraoNome\ttipoAnexoPadrao\ttipoAnexoPadraoNome\n8.01\tTJAC\tNULL\tNULL\tNULL\tNULL\n8.02\tTJAL\tNULL\tNULL\tNULL\tNULL\n8.03\tTJAP\tNULL\tNULL\tNULL\tNULL\n8.04\tTJAM\tNULL\tNULL\tNULL\tNULL\n8.05\tTJBA\tNULL\tNULL\tNULL\tNULL\n8.06\tTJCE\tNULL\tNULL\tNULL\tNULL\n8.07\tTJDF\tNULL\tNULL\tNULL\tNULL\n8.08\tTJES\tNULL\tNULL\tNULL\tNULL\n8.09\tTJGO\tNULL\tNULL\tNULL\tNULL\n8.10\tTJMA\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 47
+}

@@ -37,6 +37,9 @@ export const tribunalConfigs = mysqlTable("tribunal_configs", {
   certificadoPadrao: int("certificadoPadrao").default(2562), // ID do certificado (Wesley padrão)
   certificadoPadraoNome: varchar("certificadoPadraoNome", { length: 255 }).default("WESLEY FANTINI DE ABREU"),
   
+  // Sincronização com LegalMail
+  processoSyncCNJ: varchar("processoSyncCNJ", { length: 30 }), // CNJ do processo usado para sincronizar
+  
   // Tipos disponíveis (JSON)
   tiposPeticaoDisponiveis: json("tiposPeticaoDisponiveis").$type<Array<{id: number, nome: string}>>(),
   tiposAnexoDisponiveis: json("tiposAnexoDisponiveis").$type<Array<{id: number, nome: string}>>(),

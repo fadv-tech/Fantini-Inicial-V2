@@ -1,0 +1,347 @@
+{
+  "processo": {
+    "id": "348369",
+    "tribunal": "TJGO"
+  },
+  "peticaoMock": {
+    "id": 364022
+  },
+  "tiposPeticao": [
+    {
+      "id": "7892",
+      "nome": "Adjudicação"
+    },
+    {
+      "id": "7891",
+      "nome": "Adjudicação Requerida"
+    },
+    {
+      "id": "7893",
+      "nome": "Agravo (inominado/ legal)"
+    },
+    {
+      "id": "7894",
+      "nome": "Agravo de Instrumento em Agravo de Petição"
+    },
+    {
+      "id": "7895",
+      "nome": "Agravo de Instrumento em Recurso de Revista"
+    },
+    {
+      "id": "7896",
+      "nome": "Agravo de Instrumento em Recurso Ordinário"
+    },
+    {
+      "id": "7897",
+      "nome": "Agravo de Instrumento em Recurso Ordinário para o STF"
+    },
+    {
+      "id": "7898",
+      "nome": "Agravo de Petição"
+    },
+    {
+      "id": "7899",
+      "nome": "Agravo em recurso especial"
+    },
+    {
+      "id": "7900",
+      "nome": "Agravo em recurso extraordinário"
+    },
+    {
+      "id": "7901",
+      "nome": "Agravo retido"
+    },
+    {
+      "id": "7902",
+      "nome": "Alegações finais"
+    },
+    {
+      "id": "7903",
+      "nome": "Antecipação de Tutela"
+    },
+    {
+      "id": "7904",
+      "nome": "Apelação"
+    },
+    {
+      "id": "7905",
+      "nome": "Aquisição de Inconstitucionalidade"
+    },
+    {
+      "id": "7906",
+      "nome": "Arquivamento Requerido"
+    },
+    {
+      "id": "7907",
+      "nome": "Arresto Requerido"
+    },
+    {
+      "id": "7908",
+      "nome": "Avaliação Requerida"
+    },
+    {
+      "id": "7909",
+      "nome": "Cálculo"
+    },
+    {
+      "id": "7910",
+      "nome": "Contestação"
+    },
+    {
+      "id": "7911",
+      "nome": "Contraminuta"
+    },
+    {
+      "id": "7912",
+      "nome": "Contrarrazões"
+    },
+    {
+      "id": "7913",
+      "nome": "Denúncia"
+    },
+    {
+      "id": "7914",
+      "nome": "Desistência Requerida"
+    },
+    {
+      "id": "7915",
+      "nome": "Diligencia Requerida"
+    },
+    {
+      "id": "7916",
+      "nome": "Embargos à ação monitória"
+    },
+    {
+      "id": "7917",
+      "nome": "Embargos à Execução"
+    },
+    {
+      "id": "7918",
+      "nome": "Embargos de Declaração"
+    },
+    {
+      "id": "7919",
+      "nome": "Embargos de Divergência"
+    },
+    {
+      "id": "7920",
+      "nome": "Embargos em Ação Penal Militar"
+    },
+    {
+      "id": "7921",
+      "nome": "Embargos infringentes"
+    },
+    {
+      "id": "7923",
+      "nome": "Embargos Infringentes"
+    },
+    {
+      "id": "7922",
+      "nome": "Embargos Infringentes na Execução Fiscal"
+    },
+    {
+      "id": "7924",
+      "nome": "Exceção de Impedimento"
+    },
+    {
+      "id": "7925",
+      "nome": "Exceção de Incompetência"
+    },
+    {
+      "id": "7926",
+      "nome": "Exceção de Suspeição"
+    },
+    {
+      "id": "7927",
+      "nome": "Habilitação Requerida"
+    },
+    {
+      "id": "7928",
+      "nome": "Impugnação ao cumprimento de sentença"
+    },
+    {
+      "id": "7929",
+      "nome": "Impugnação ao Valor da Causa"
+    },
+    {
+      "id": "7930",
+      "nome": "Impugnação aos embargos"
+    },
+    {
+      "id": "7931",
+      "nome": "Impugnação aos Embargos na Execução Fiscal"
+    },
+    {
+      "id": "7932",
+      "nome": "Impugnação do Cálculo"
+    },
+    {
+      "id": "7933",
+      "nome": "Incidente de Desconsideração de Personalidade Jurídica"
+    },
+    {
+      "id": "7934",
+      "nome": "Incidente de Falsidade"
+    },
+    {
+      "id": "7935",
+      "nome": "Incidente de uniformização de jurisprudência"
+    },
+    {
+      "id": "7936",
+      "nome": "Memoriais"
+    },
+    {
+      "id": "7937",
+      "nome": "Parecer de Mérito (MP)"
+    },
+    {
+      "id": "7938",
+      "nome": "Parecer Falta de Interesse (MP)"
+    },
+    {
+      "id": "7939",
+      "nome": "Parecer sobre a admissibilidade de incidente ou recurso para estabelecer precedente qualificado (MP)"
+    },
+    {
+      "id": "7940",
+      "nome": "Pedido de assistência litisconsorcial"
+    },
+    {
+      "id": "7941",
+      "nome": "Pedido de assistência simples"
+    },
+    {
+      "id": "7942",
+      "nome": "Pedido de Instauração de IAC"
+    },
+    {
+      "id": "7943",
+      "nome": "Pedido de Instauração de IRDR"
+    },
+    {
+      "id": "7944",
+      "nome": "Pedido de reconsideração"
+    },
+    {
+      "id": "7945",
+      "nome": "Perícia Requerida"
+    },
+    {
+      "id": "7946",
+      "nome": "Petição"
+    },
+    {
+      "id": "7947",
+      "nome": "Petição Inicial"
+    },
+    {
+      "id": "7948",
+      "nome": "Procuração/substabelecimento com reserva de poderes"
+    },
+    {
+      "id": "7949",
+      "nome": "Procuração/substabelecimento sem reserva de poderes"
+    },
+    {
+      "id": "7950",
+      "nome": "Razões de apelação criminal"
+    },
+    {
+      "id": "7951",
+      "nome": "Razões de recurso em sentido estrito"
+    },
+    {
+      "id": "7952",
+      "nome": "Razões finais"
+    },
+    {
+      "id": "7953",
+      "nome": "Reconvenção"
+    },
+    {
+      "id": "7954",
+      "nome": "Recurso adesivo"
+    },
+    {
+      "id": "7955",
+      "nome": "Recurso de Multa"
+    },
+    {
+      "id": "7956",
+      "nome": "Recurso de Revista"
+    },
+    {
+      "id": "7957",
+      "nome": "Recurso de sentença (JEF)"
+    },
+    {
+      "id": "7958",
+      "nome": "Recurso em sentido estrito"
+    },
+    {
+      "id": "7959",
+      "nome": "Recurso especial"
+    },
+    {
+      "id": "7960",
+      "nome": "Recurso extraordinário"
+    },
+    {
+      "id": "7961",
+      "nome": "Redistribuição Requerida"
+    },
+    {
+      "id": "7962",
+      "nome": "Renúncia de mandato"
+    },
+    {
+      "id": "7963",
+      "nome": "Renúncia de Prazo"
+    },
+    {
+      "id": "7964",
+      "nome": "Réplica"
+    },
+    {
+      "id": "7965",
+      "nome": "Resposta"
+    },
+    {
+      "id": "7966",
+      "nome": "Resposta à acusação"
+    },
+    {
+      "id": "7967",
+      "nome": "Tutela Antecipada Incidental"
+    },
+    {
+      "id": "7968",
+      "nome": "Tutela Cautelar Incidental"
+    },
+    {
+      "id": "7969",
+      "nome": "Tutela de Evidência"
+    }
+  ],
+  "tiposAnexo": [
+    {
+      "nome": "Alegações Finais"
+    },
+    {
+      "nome": "Comprovante de Endereço"
+    },
+    {
+      "nome": "CPF"
+    },
+    {
+      "nome": "Outros"
+    },
+    {
+      "nome": "Procuração"
+    },
+    {
+      "nome": "Substabelecimento"
+    }
+  ]
+}

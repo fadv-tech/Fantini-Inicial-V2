@@ -1,0 +1,14 @@
+{
+  "query": "SELECT tipoPeticaoPadrao, COUNT(*) FROM tribunal_configs GROUP BY tipoPeticaoPadrao",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39QSeYhbNv3L4jg.846f4ba715a4 --database 2HAR2cejBwEBj6M7XczVcW --execute SELECT tipoPeticaoPadrao, COUNT(*) FROM tribunal_configs GROUP BY tipoPeticaoPadrao",
+  "rows": [
+    {
+      "tipoPeticaoPadrao": "NULL",
+      "COUNT(*)": "27"
+    }
+  ],
+  "messages": [],
+  "stdout": "tipoPeticaoPadrao\tCOUNT(*)\nNULL\t27\n",
+  "stderr": "",
+  "execution_time_ms": 46
+}

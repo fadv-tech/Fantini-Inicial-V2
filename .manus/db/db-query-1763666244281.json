@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE tribunal_configs ADD COLUMN processoSyncCNJ VARCHAR(30) AFTER certificadoPadraoNome;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39QSeYhbNv3L4jg.846f4ba715a4 --database 2HAR2cejBwEBj6M7XczVcW --execute ALTER TABLE tribunal_configs ADD COLUMN processoSyncCNJ VARCHAR(30) AFTER certificadoPadraoNome;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1759
+}
